@@ -32,7 +32,7 @@ function App() {
 
         <div className="p-4 bg-black text-white flex items-center gap-3">
           <div className="w-8 h-8 bg-brand-lime flex items-center justify-center">
-            <User size={18} color="black"/>
+            <User size={20} color="black"/>
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-header font-bold uppercase">Kate Aikeen</span>
