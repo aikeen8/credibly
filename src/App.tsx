@@ -45,20 +45,16 @@ function App() {
         </div>
       </aside>  
 
-      <main className="flex-1 p-10 flex flex-col gap-8">
-        <Card>
-          <CardHeader>UI Test</CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-4 max-w-sm">
-              <Input label="Certificate Name" placeholder="AWS Cloud Practitioner" />
+      <main className="flex-1 p-10 flex flex-col gap-10">
+        {/* Dashboard Header */}
+        <div className="flex items-start justify-between border-b-2 border-black pb-6">
+          <div className="flex flex-col gap-2">
+            <h2 className="font-header text-3xl uppercase tracking-tight">Dashboard</h2>
+            <p className="text-sm text-gray-600 max-w-md">Track your certifications and skill progress in one place.</p>
+          </div>
 
-              <div className="flex gap-3">
-                <Button>Primary</Button>
-                <Button variant="secondary">Secondary</Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          <Button>+ Log New Certificate</Button>
+        </div>
       </main>
     </div>
   )
