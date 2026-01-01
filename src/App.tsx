@@ -1,4 +1,8 @@
 import { BookOpen, LayoutDashboard, Medal, Trophy, Settings, User } from 'lucide-react';
+import { Button } from "./components/ui/Button";
+import { Card, CardHeader, CardContent } from "./components/ui/Card";
+import { Input } from "./components/ui/Input";
+
 
 function App() {
   const navLinks = [
@@ -36,10 +40,26 @@ function App() {
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-header font-bold uppercase">Kate Aikeen</span>
-            <span className="text-[10px] text-gray-400 uppercase">Pro Member</span>
+            <span className="text-[10px] text-gray-400 uppercase">Student</span>
           </div>
         </div>
       </aside>  
+
+      <main className="flex-1 p-10 flex flex-col gap-8">
+        <Card>
+          <CardHeader>UI Test</CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-4 max-w-sm">
+              <Input label="Certificate Name" placeholder="AWS Cloud Practitioner" />
+
+              <div className="flex gap-3">
+                <Button>Primary</Button>
+                <Button variant="secondary">Secondary</Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
     </div>
   )
 }
