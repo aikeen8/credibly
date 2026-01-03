@@ -10,6 +10,12 @@ const completionData: { name: CompletionStatus; value: number }[] = [
   { name: "Planned", value: 3 },
 ];
 
+const skillData: { name: string; value: number }[] = [
+  { name: "Computer Science", value: 3 },
+  { name: "Project Management", value: 1 },
+  { name: "Data Science", value: 2 },
+];
+
 const COMPLETION_COLORS: Record<CompletionStatus, string> = {
   Completed: "#c5ff55",
   "In Progress": "#000000",
@@ -32,12 +38,12 @@ export default function Dashboard() {
         <Button>+ Log New Certificate</Button>
       </div>
 
-      {/* COMPLETION INDEX */}
+      
       <div className="grid grid-cols-2 gap-8">
+        {/* COMPLETION INDEX */}
         <Card>
           <CardHeader>Completion Index</CardHeader>
           <CardContent>
-            {/* Donut */}
             <div className="h-64 flex items-center justify-center">
               <PieChart width={220} height={220}>
                 <Pie
@@ -71,6 +77,15 @@ export default function Dashboard() {
                   </span>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+        {/* SKILL DISTRIBUTION */}
+        <Card>
+          <CardHeader>Skill Distribution</CardHeader>
+          <CardContent>
+            <div className="h-64 flex items-center justify-center">
+                
             </div>
           </CardContent>
         </Card>
