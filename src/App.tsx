@@ -2,8 +2,11 @@ type CompletionStatus = "Completed" | "In Progress" | "Planned";
 import { BookOpen, LayoutDashboard, Medal, Trophy, Settings, User } from 'lucide-react';
 import { Button } from "./components/ui/Button";
 import { Card, CardHeader, CardContent } from "./components/ui/Card";
-import { Input } from "./components/ui/Input";
 import { PieChart, Pie, Cell } from "recharts";
+
+import { Outlet } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   const navLinks = [
@@ -19,13 +22,11 @@ function App() {
     { name: "Planned", value: 3 },
   ];
 
-
   const COMPLETION_COLORS: Record<CompletionStatus, string> = {
     Completed: "#c5ff55",
     "In Progress": "#000000",
     Planned: "#9ca3af",
   };
-
 
   return (
     <div className="flex min-h-screen bg-brand-bg">
@@ -60,46 +61,13 @@ function App() {
         </div>
       </aside>  
 
-      <main className="flex-1 p-10 flex flex-col gap-10">
-      {/* Dashboard Header */}
-        <div className="flex items-start justify-between border-b-2 border-black pb-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="font-header text-3xl uppercase tracking-tight">Dashboard</h2>
-            <p className="text-sm text-gray-600 max-w-md">Track your certifications and skill progress in one place.</p>
-          </div>
-          <Button>+ Log New Certificate</Button>
-        </div>
-      {/* Dashboard Charts */}
-        <div className="grid grid-cols-2 gap-8">
-          <Card>
-            <CardHeader>Completion Index</CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-center justify-center">
-                <PieChart width={200} height={200}>
-                  <Pie
-                    data={completionData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={65}
-                    outerRadius={90}
-                    stroke="#000"
-                    strokeWidth={2}
-                  >
-                    {completionData.map((entry) => (
-                        <Cell
-                          key={entry.name}
-                          fill={COMPLETION_COLORS[entry.name]}
-                        />
-                      ))}
-                    </Pie>
-                </PieChart>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      <main className="flex-1 p-10">
+        {/* Dashboard Route */}
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+        </Routes>
       </main>
+
     </div>
   )
 }
