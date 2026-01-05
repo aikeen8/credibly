@@ -3,11 +3,13 @@ import React from "react";
 type ButtonProps = {
   variant?: "primary" | "secondary";
   children: React.ReactNode;
+  className?: string;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export function Button({
   variant = "primary",
   children,
+  className = "",
   ...props
 }: ButtonProps) {
   const baseStyles =
@@ -15,14 +17,14 @@ export function Button({
     
   const variantStyles = {
     primary:
-    "bg-brand-lime text-black hover:shadow-[4px_4px_0_#000] hover:-translate-y-[1px] active:translate-y-0",
+    "bg-brand-lime text-black hover:shadow-[4px_4px_0_#000] hover:-translate-y-[1px] active:translate-y-0 active:shadow-none",
     secondary:
-    "bg-white text-black hover:shadow-[4px_4px_0_#000] hover:-translate-y-[1px] active:translate-y-0",
+    "bg-white text-black hover:shadow-[4px_4px_0_#000] hover:-translate-y-[1px] active:translate-y-0 active:shadow-none",
   };
 
   return (
     <button
-      className={`${baseStyles} ${variantStyles[variant]}`}
+      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {children}

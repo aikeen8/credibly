@@ -1,19 +1,20 @@
-import { BookOpen, LayoutDashboard, Medal, Trophy, Settings, User } from "lucide-react";
+import { BookOpen, LayoutDashboard, Map, Trophy, Settings, User } from "lucide-react";
 import { Routes, Route, useLocation, Link } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
+import Credentials from "./pages/Pathways";
 
 function App() {
   const location = useLocation();
 
   const navLinks = [
     { name: "Dashboard", path: "/", icon: <LayoutDashboard size={20} strokeWidth={2} /> },
-    { name: "Credentials", path: "/credentials", icon: <Medal size={20} strokeWidth={2} /> },
+    { name: "Pathways", path: "/credentials", icon: <Map size={20} strokeWidth={2} /> },
     { name: "Rewards", path: "/rewards", icon: <Trophy size={20} strokeWidth={2} /> },
     { name: "Settings", path: "/settings", icon: <Settings size={20} strokeWidth={2} /> },
   ];
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
+    <div className="flex h-screen bg-brand-bg overflow-hidden">
       <aside className="w-64 border-r-2 border-black flex flex-col bg-white h-full shrink-0 overflow-y-auto">
         <div className="p-6 border-b-2 border-black flex items-center justify-center gap-3 sticky top-0 bg-white z-10">
           <div className="w-7 h-7 bg-brand-lime border-2 border-black flex items-center justify-center">
@@ -64,6 +65,7 @@ function App() {
         <div className="max-w-7xl mx-auto">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/credentials" element={<Credentials />} />
           </Routes>
         </div>
       </main>

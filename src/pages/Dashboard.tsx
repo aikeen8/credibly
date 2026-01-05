@@ -1,5 +1,7 @@
 import { Button } from "../components/ui/Button";
 import { Card, CardHeader, CardContent } from "../components/ui/Card";
+import { AddGoalModal } from "../components/AddGoalModal";
+import { useState } from "react";
 import {
   Trophy,
   Clock,
@@ -7,9 +9,12 @@ import {
   Loader,
   Calendar,
   Sparkles,
+  Plus,
 } from "lucide-react";
 
 export default function Dashboard() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="flex flex-col gap-10">
       <div className="flex items-start justify-between border-b-2 border-black pb-6">
@@ -21,7 +26,11 @@ export default function Dashboard() {
             Track your certifications and skill progress in one place.
           </p>
         </div>
-        <Button>+ Log New Certificate</Button>
+        <Button onClick={() => setIsModalOpen(true)}>
+          <div className="flex items-center gap-2">
+             <Plus size={16} /> Log New Goal
+          </div>
+        </Button>
       </div>
 
       <Card className="shadow-none">
@@ -110,6 +119,8 @@ export default function Dashboard() {
           </Card>
         </div>
       </div>
+
+      <AddGoalModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }
