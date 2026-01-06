@@ -1,14 +1,16 @@
 import { BookOpen, LayoutDashboard, Map, Trophy, Settings, User } from "lucide-react";
 import { Routes, Route, useLocation, Link } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
-import Credentials from "./pages/Pathways";
+import Pathways from "./pages/Pathways";
+import Rewards from "./pages/Rewards";
+import SettingsPage from "./pages/Settings";
 
 function App() {
   const location = useLocation();
 
   const navLinks = [
     { name: "Dashboard", path: "/", icon: <LayoutDashboard size={20} strokeWidth={2} /> },
-    { name: "Pathways", path: "/credentials", icon: <Map size={20} strokeWidth={2} /> },
+    { name: "Pathways", path: "/pathways", icon: <Map size={20} strokeWidth={2} /> },
     { name: "Rewards", path: "/rewards", icon: <Trophy size={20} strokeWidth={2} /> },
     { name: "Settings", path: "/settings", icon: <Settings size={20} strokeWidth={2} /> },
   ];
@@ -62,10 +64,12 @@ function App() {
       </aside>
 
       <main className="flex-1 p-10 overflow-y-auto h-full">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto h-full">
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/credentials" element={<Credentials />} />
+            <Route path="/pathways" element={<Pathways />} />
+            <Route path="/rewards" element={<Rewards />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </div>
       </main>
