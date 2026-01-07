@@ -11,6 +11,7 @@ export type Course = {
   date?: string;
   skills: string[];
   image?: string;
+  credentialUrl?: string;
   roadmap: { id: string; label: string; isCompleted: boolean }[];
 };
 
@@ -22,6 +23,7 @@ type Props = {
 export function CourseDetailView({ course, onBack }: Props) {
   const [roadmap, setRoadmap] = useState(course.roadmap);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const toggleStep = (id: string) => {
     setRoadmap((prev) =>
@@ -32,6 +34,37 @@ export function CourseDetailView({ course, onBack }: Props) {
   };
 
   const completedCount = roadmap.filter((s) => s.isCompleted).length;
+
+  const handleOpenUrl = () => {
+    if (course.credentialUrl) {
+      window.open(course.credentialUrl, "_blank", "noopener,noreferrer");
+    } else {
+      alert("No credential URL provided.");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this goal?")) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/goals/${course.id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        alert("Goal Deleted!");
+        window.location.reload();
+      } else {
+        alert("Failed to delete goal.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <>
@@ -129,11 +162,16 @@ export function CourseDetailView({ course, onBack }: Props) {
                 <Button 
                   variant="secondary"
                   className="w-full flex justify-center gap-2 items-center shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  onClick={handleOpenUrl}
                 >
                    Open Credential URL <ExternalLink size={14}/>
                 </Button>
-                <button className="w-full border-2 border-red-500 text-red-500 py-3 font-black text-[10px] uppercase hover:bg-red-500 hover:text-white transition-colors">
-                  Delete Log
+                <button 
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="w-full border-2 border-red-500 text-red-500 py-3 font-black text-[10px] uppercase hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
+                >
+                  {isDeleting ? "Deleting..." : "Delete Log"}
                 </button>
               </div>
             </div>

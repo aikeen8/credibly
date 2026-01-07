@@ -1,52 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/ui/Button";
 import { Plus, MoreVertical, Calendar, Award } from "lucide-react";
 import { CourseDetailView, type Course } from "../components/CourseDetailView";
 import { AddGoalModal } from "../components/AddGoalModal";
 
-const MOCK_COURSES: Course[] = [
-  {
-    id: "1",
-    title: "AWS Certified Solutions Architect",
-    issuer: "Amazon Web Services",
-    status: "In Progress",
-    date: "Target: Dec 2026",
-    skills: ["Cloud Computing", "AWS", "Architecture"],
-    roadmap: [
-      { id: "s1", label: "Complete Cloud Practitioner Fundaments", isCompleted: true },
-      { id: "s2", label: "Finish Cantorill's SAA-C03 Course", isCompleted: false },
-    ],
-  },
-  {
-    id: "2",
-    title: "Google Data Analytics",
-    issuer: "Coursera",
-    status: "Completed",
-    date: "Finished: Jan 2024",
-    skills: ["R Programming", "SQL", "Tableau"],
-    roadmap: [
-        { id: "s1", label: "Foundations of Data", isCompleted: true },
-        { id: "s2", label: "Ask Questions to Make Decisions", isCompleted: true },
-    ]
-  },
-  {
-    id: "3",
-    title: "Full Stack Open 2025",
-    issuer: "University of Helsinki",
-    status: "Planned",
-    date: "Start: Feb 2025",
-    skills: ["React", "Node.js", "GraphQL"],
-    roadmap: [
-        { id: "s1", label: "Part 0: Fundamentals", isCompleted: false },
-    ]
-  },
-];
-
 export default function Pathways() {
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [courses, setCourses] = useState<Course[]>([]);
 
-  const activeCourse = MOCK_COURSES.find((c) => c.id === selectedCourseId);
+  useEffect(() => {
+    fetchGoals();
+  }, []);
+
+  const fetchGoals = async () => {
+    try {
+      const response = await fetch("/api/goals");
+      const data = await response.json();
+      
+      const formattedData = data.map((item: any) => ({
+        id: item._id,
+        title: item.title,
+        issuer: item.issuer,
+        status: item.status,
+        date: item.date ? `Target: ${item.date}` : "No Date", 
+        skills: item.skills || [],
+        credentialUrl: item.credentialUrl || "",
+        roadmap: item.roadmap || [],
+      }));
+
+      setCourses(formattedData);
+    } catch (error) {
+      console.error("Error fetching goals:", error);
+    }
+  };
+
+  const activeCourse = courses.find((c) => c.id === selectedCourseId);
 
   if (selectedCourseId && activeCourse) {
     return (
@@ -77,7 +66,7 @@ export default function Pathways() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {MOCK_COURSES.map((course) => (
+          {courses.map((course) => (
             <CourseTile 
               key={course.id} 
               course={course} 
@@ -87,7 +76,13 @@ export default function Pathways() {
         </div>
       </div>
 
-      <AddGoalModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AddGoalModal 
+        isOpen={isModalOpen} 
+        onClose={() => {
+            setIsModalOpen(false);
+            fetchGoals();
+        }} 
+      />
     </>
   );
 }
@@ -99,6 +94,8 @@ function CourseTile({ course, onClick }: { course: Course; onClick: () => void }
     "Planned": "bg-gray-100 text-gray-400 border-gray-300 dashed",
   };
 
+  const statusClass = statusColors[course.status as keyof typeof statusColors] || statusColors["Planned"];
+
   return (
     <div 
         onClick={onClick}
@@ -106,7 +103,7 @@ function CourseTile({ course, onClick }: { course: Course; onClick: () => void }
     >
       <div className="flex flex-col gap-4">
         <div className="flex justify-between items-start">
-            <div className={`text-[10px] font-black uppercase px-2 py-1 border-2 border-black ${statusColors[course.status]}`}>
+            <div className={`text-[10px] font-black uppercase px-2 py-1 border-2 border-black ${statusClass}`}>
                 {course.status}
             </div>
             <MoreVertical size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />

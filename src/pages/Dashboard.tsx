@@ -16,7 +16,7 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10 pb-10">
       <div className="flex items-start justify-between border-b-2 border-black pb-6">
         <div className="flex flex-col gap-2">
           <h2 className="font-header text-3xl uppercase tracking-tight font-black">

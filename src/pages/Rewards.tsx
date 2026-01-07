@@ -20,8 +20,7 @@ export default function Rewards() {
   const prevSlide = () => setSlideIndex(0);
 
   return (
-    // Changed h-full to min-h-full and increased padding to pb-20
-    <div className="flex flex-col min-h-full gap-10 pb-20">
+    <div className="flex flex-col min-h-full gap-10 pb-10">
       
       <div className="shrink-0">
         {/* HEADER SECTION */}

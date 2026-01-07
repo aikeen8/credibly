@@ -54,7 +54,7 @@ function App() {
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-header font-bold uppercase text-brand-lime">
-              Kate Aikeen
+              Alistair
             </span>
             <span className="text-[10px] text-gray-400 uppercase">
               Student
