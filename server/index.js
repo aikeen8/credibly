@@ -18,7 +18,8 @@ mongoose.connect(MONGODB_URI)
 
 // --- ROUTES ---
 const goalsRouter = require('./routes/goals'); 
-app.use('/api/goals', goalsRouter);           
+app.use('/api/goals', goalsRouter);    
+app.use('/api/ai', require('./routes/ai'));       
 
 app.get('/', (req, res) => {
   res.send('API is running...');

@@ -41,7 +41,10 @@ export default function Pathways() {
     return (
       <CourseDetailView 
         course={activeCourse} 
-        onBack={() => setSelectedCourseId(null)} 
+        onBack={() => {
+            setSelectedCourseId(null);
+            fetchGoals(); 
+        }} 
       />
     );
   }

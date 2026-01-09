@@ -1,7 +1,8 @@
 import { Button } from "../components/ui/Button";
 import { Card, CardHeader, CardContent } from "../components/ui/Card";
 import { AddGoalModal } from "../components/AddGoalModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Trophy,
   Clock,
@@ -10,10 +11,94 @@ import {
   Calendar,
   Sparkles,
   Plus,
+  ExternalLink,
 } from "lucide-react";
+
+type Goal = {
+  _id: string;
+  title: string;
+  status: "Completed" | "In Progress" | "Planned";
+  date: string;
+  skills?: string[];
+  roadmap?: { isCompleted: boolean }[];
+};
+
+type Recommendation = {
+  title: string;
+  url: string;
+  reason: string;
+};
 
 export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchGoals();
+  }, []);
+
+  const fetchGoals = async () => {
+    try {
+      const response = await fetch("/api/goals");
+      const data = await response.json();
+      setGoals(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAnalyze = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsAnalyzing(true);
+    
+    try {
+        const res = await fetch('/api/ai/recommend', { method: 'POST' });
+        const data = await res.json();
+        
+        if (data.title) {
+            setRecommendation(data);
+        } else {
+            console.error("AI Error:", data);
+            alert("AI couldn't find a recommendation right now.");
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Server error. Check your terminal logs.");
+    } finally {
+        setIsAnalyzing(false);
+    }
+  };
+
+  const completedCount = goals.filter((g) => g.status === "Completed").length;
+  const inProgressCount = goals.filter((g) => g.status === "In Progress").length;
+  const plannedCount = goals.filter((g) => g.status === "Planned").length;
+  const totalGoals = goals.length;
+  const completionRate = totalGoals === 0 ? 0 : Math.round((completedCount / totalGoals) * 100);
+
+  const uniqueSkills = new Set<string>();
+  goals.forEach(g => g.skills?.forEach(s => uniqueSkills.add(s.toLowerCase().trim())));
+  const totalStepsCompleted = goals.reduce((acc, g) => acc + (g.roadmap?.filter(r => r.isCompleted).length || 0), 0);
+  const hasLongRoadmap = goals.some(g => (g.roadmap?.length || 0) >= 5);
+
+  let badgesEarned = 0;
+  if (totalGoals >= 1) badgesEarned++;
+  if (completedCount >= 3) badgesEarned++;
+  if (uniqueSkills.size >= 10) badgesEarned++;
+  if (totalStepsCompleted >= 5) badgesEarned++;
+  if (hasLongRoadmap) badgesEarned++;
+  if (totalGoals >= 7) badgesEarned++;
+  if (completedCount >= 1) badgesEarned++;
+  if (completedCount >= 5) badgesEarned++;
+
+  const recentActivity = [...goals].reverse().slice(0, 3);
 
   return (
     <div className="flex flex-col gap-10 pb-10">
@@ -23,7 +108,7 @@ export default function Dashboard() {
             Dashboard
           </h2>
           <p className="text-sm text-gray-600 max-w-md">
-            Track your certifications and skill progress in one place.
+            Track your skill progress in one place.
           </p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
@@ -38,31 +123,34 @@ export default function Dashboard() {
         <CardContent>
           <div className="flex items-center gap-4">
             <div className="flex-1 h-6 border-2 border-black bg-white relative">
-              <div className="h-full bg-brand-lime w-[60%] border-r-2 border-black" />
+              <div 
+                className="h-full bg-brand-lime border-r-2 border-black transition-all duration-1000" 
+                style={{ width: `${completionRate}%` }}
+              />
             </div>
-            <span className="font-black text-lg">60%</span>
+            <span className="font-black text-lg">{completionRate}%</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
             <StatTile
-              icon={<Trophy size={18} />}
-              label="Total Achievements"
-              value="12"
+              icon={<CheckCircle size={18} />}
+              label="Completed"
+              value={completedCount.toString()}
             />
             <StatTile
               icon={<Loader size={18} />}
               label="In Progress"
-              value="4"
+              value={inProgressCount.toString()}
             />
             <StatTile
               icon={<Calendar size={18} />}
-              label="This Month"
-              value="2"
+              label="Planned"
+              value={plannedCount.toString()}
             />
             <StatTile
-              icon={<CheckCircle size={18} />}
-              label="Trophies"
-              value="6"
+              icon={<Trophy size={18} />}
+              label="Badges Earned"
+              value={badgesEarned.toString()} 
             />
           </div>
         </CardContent>
@@ -74,7 +162,10 @@ export default function Dashboard() {
             <CardHeader>
               <div className="flex items-center justify-between w-full">
                 <span>Recent Activity</span>
-                <button className="text-xs underline text-gray-600 hover:text-black">
+                <button 
+                  onClick={() => navigate("/pathways")}
+                  className="text-xs underline text-gray-600 hover:text-black"
+                >
                   View details
                 </button>
               </div>
@@ -82,19 +173,20 @@ export default function Dashboard() {
 
             <CardContent className="flex-1 flex flex-col">
               <div className="flex flex-col gap-4">
-                <ActivityItem
-                  title="Google Data Analytics"
-                  status="Completed"
-                  date="Jan 2, 2026"
-                />
-                <ActivityItem
-                  title="Scrum Fundamentals"
-                  status="In Progress"
-                />
-                <ActivityItem
-                  title="Python for Everybody"
-                  status="Planned"
-                />
+                {isLoading ? (
+                    <div className="text-xs font-bold uppercase text-gray-400">Loading activity...</div>
+                ) : recentActivity.length === 0 ? (
+                    <div className="text-xs font-bold uppercase text-gray-400">No activity yet.</div>
+                ) : (
+                    recentActivity.map((goal) => (
+                        <ActivityItem
+                            key={goal._id}
+                            title={goal.title}
+                            status={goal.status}
+                            date={goal.date}
+                        />
+                    ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -106,21 +198,67 @@ export default function Dashboard() {
               AI Recommendations
             </CardHeader>
             
-            <CardContent className="flex-1 bg-brand-lime p-6 flex flex-col justify-center">
-              <div className="bg-white border-2 border-black p-5 flex flex-col gap-4">
-                <Sparkles size={20} className="text-black" />
-                <p className="text-sm font-medium leading-relaxed">
-                  Let AI analyze your certifications and suggest what you should
-                  pursue next to maximize your growth.
-                </p>
-                <Button>Analyze my profile</Button>
+            <CardContent className="flex-1 bg-brand-lime p-6 flex flex-col justify-center transition-all">
+              <div className="bg-white border-2 border-black p-5 flex flex-col gap-4 shadow-[4px_4px_0_0_rgba(0,0,0,0.1)]">
+                
+                {!recommendation ? (
+                    <>
+                        <Sparkles size={24} className="text-black fill-brand-lime" />
+                        <p className="text-sm font-medium leading-relaxed">
+                            {isAnalyzing 
+                                ? "Analyzing your skills and searching for the best course..." 
+                                : "Let AI analyze your skills and suggest what you should pursue next."}
+                        </p>
+                        <Button onClick={(e) => handleAnalyze(e)} disabled={isAnalyzing}>
+                            {isAnalyzing ? "Searching..." : "Analyze my profile"}
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <div className="flex justify-between items-start">
+                             <Sparkles size={24} className="text-black fill-brand-lime" />
+                             <button 
+                                onClick={() => setRecommendation(null)} 
+                                className="text-[10px] font-black underline uppercase text-gray-500 hover:text-red-500"
+                             >
+                                Reset
+                             </button>
+                        </div>
+                        
+                        <div className="flex flex-col gap-1">
+                            <span className="text-[10px] font-black uppercase text-gray-500">
+                              Recommended for you:
+                            </span>
+                            <h4 className="font-header text-xl uppercase leading-tight font-black">
+                              {recommendation.title}
+                            </h4>
+                        </div>
+                        
+                        <p className="text-xs text-gray-600 leading-snug">
+                            {recommendation.reason}
+                        </p>
+
+                        <Button onClick={() => window.open(recommendation.url, '_blank')}>
+                            <div className="flex items-center justify-center gap-2 w-full">
+                                VIEW COURSE <ExternalLink size={16} />
+                            </div>
+                        </Button>
+                    </>
+                )}
+
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      <AddGoalModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AddGoalModal 
+        isOpen={isModalOpen} 
+        onClose={() => {
+            setIsModalOpen(false);
+            fetchGoals();
+        }} 
+       />
     </div>
   );
 }
@@ -169,15 +307,15 @@ function ActivityItem({
         </div>
 
         <div className="flex flex-col">
-          <span className="font-black text-sm uppercase tracking-tight">{title}</span>
-          {status === "Completed" && (
+          <span className="font-black text-sm uppercase tracking-tight line-clamp-1">{title}</span>
+          {status === "Completed" && date && (
             <span className="text-[10px] font-bold text-gray-500">{date}</span>
           )}
         </div>
       </div>
 
       <span
-        className={`text-[10px] font-black px-3 py-1 border-2 border-black uppercase ${statusStyles}`}
+        className={`text-[10px] font-black px-3 py-1 border-2 border-black uppercase whitespace-nowrap ${statusStyles}`}
       >
         {status}
       </span>
