@@ -5,7 +5,6 @@ import { API_URL } from "../config";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -19,7 +18,7 @@ export default function Signup() {
       const res = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       const data = await res.json();
@@ -43,11 +42,6 @@ export default function Signup() {
         <h1 className="text-4xl font-black uppercase mb-6 leading-none">Join the<br/>Movement.</h1>
         
         <form onSubmit={handleSignup} className="flex flex-col gap-4">
-          <div>
-            <label className="font-black text-xs uppercase">Email</label>
-            <input type="email" required className="w-full border-2 border-black p-3 font-bold focus:bg-[#fdfbf6]" 
-              value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
           <div>
             <label className="font-black text-xs uppercase">Username</label>
             <input type="text" required className="w-full border-2 border-black p-3 font-bold focus:bg-[#fdfbf6]" 

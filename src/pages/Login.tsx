@@ -4,7 +4,7 @@ import { Button } from "../components/ui/Button";
 import { API_URL } from "../config";
 
 export default function Login() {
-  const [identifier, setIdentifier] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
@@ -13,7 +13,7 @@ export default function Login() {
     const res = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ identifier, password }),
+      body: JSON.stringify({ username, password }),
     });
 
     const data = await res.json();
@@ -38,13 +38,13 @@ export default function Login() {
 
         <form onSubmit={handleLogin} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <label className="font-black text-xs uppercase tracking-wider">Username or Email</label>
+            <label className="font-black text-xs uppercase tracking-wider">Username</label>
             <input 
               type="text" 
               className="w-full border-2 border-black p-3 font-bold focus:outline-none focus:bg-[#bef264] transition-colors"
-              placeholder="Enter username or email"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="Enter username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
