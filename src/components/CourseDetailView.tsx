@@ -1,7 +1,9 @@
-import { ArrowLeft, ExternalLink, CheckSquare, Square, Trash2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, CheckSquare, Square, Trash2, Edit2 } from "lucide-react";
 import { Button } from "./ui/Button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EditCourseModal } from "./EditCourseModal";
+import { useToast } from "../context/ToastContext";
+import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 
 export type Course = {
   id: string;
@@ -12,7 +14,7 @@ export type Course = {
   skills: string[];
   image?: string;
   credentialUrl?: string;
-  roadmap: { _id?: string; label: string; isCompleted: boolean }[];
+  roadmap: { _id?: string; title: string; isCompleted: boolean }[];
 };
 
 type Props = {
@@ -21,22 +23,53 @@ type Props = {
 };
 
 export function CourseDetailView({ course, onBack }: Props) {
+  const { toast } = useToast();
   const [roadmap, setRoadmap] = useState(course.roadmap || []);
+  const [status, setStatus] = useState(course.status);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [newStep, setNewStep] = useState("");
+
+  useEffect(() => {
+    setRoadmap(course.roadmap || []);
+    setStatus(course.status);
+  }, [course]);
 
   const updateRoadmap = async (updatedRoadmap: typeof roadmap) => {
     setRoadmap(updatedRoadmap);
 
+    const allChecked = updatedRoadmap.length > 0 && updatedRoadmap.every((item) => item.isCompleted);
+    let newStatus = status;
+
+    if (allChecked) {
+      newStatus = "Completed";
+    } else if (status === "Completed" && !allChecked) {
+      newStatus = "In Progress";
+    }
+
+    setStatus(newStatus);
+
     try {
-      await fetch(`/api/goals/${course.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roadmap: updatedRoadmap }),
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/goals/${course.id}`, {
+        method: "PUT",
+        headers: { 
+            "Content-Type": "application/json",
+            "x-auth-token": token || "" 
+        },
+        body: JSON.stringify({ 
+          roadmap: updatedRoadmap,
+          status: newStatus 
+        }),
       });
+
+      if (!response.ok) {
+          throw new Error("Failed to save");
+      }
     } catch (error) {
       console.error("Failed to sync roadmap", error);
+      toast("Failed to save progress", "error");
     }
   };
 
@@ -51,7 +84,7 @@ export function CourseDetailView({ course, onBack }: Props) {
 
   const handleAddStep = () => {
     if (!newStep.trim()) return;
-    const updated = [...roadmap, { label: newStep, isCompleted: false }];
+    const updated = [...roadmap, { title: newStep, isCompleted: false }];
     setNewStep("");
     updateRoadmap(updated);
   };
@@ -68,30 +101,33 @@ export function CourseDetailView({ course, onBack }: Props) {
     if (course.credentialUrl) {
       window.open(course.credentialUrl, "_blank", "noopener,noreferrer");
     } else {
-      alert("No credential URL provided.");
+      toast("No credential URL provided.", "error");
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this goal?")) return;
-
+  const handleDeleteConfirm = async () => {
     setIsDeleting(true);
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`/api/goals/${course.id}`, {
         method: "DELETE",
+        headers: {
+            "x-auth-token": token || ""
+        }
       });
 
       if (response.ok) {
-        alert("Goal Deleted!");
+        toast("Goal Deleted!", "success");
         window.location.reload();
       } else {
-        alert("Failed to delete goal.");
+        toast("Failed to delete goal.", "error");
       }
     } catch (error) {
       console.error(error);
-      alert("Something went wrong.");
+      toast("Something went wrong.", "error");
     } finally {
       setIsDeleting(false);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -122,9 +158,9 @@ export function CourseDetailView({ course, onBack }: Props) {
           <div className="flex flex-col gap-8 mb-8 border-b-2 border-black pb-8 shrink-0">
               <div className="flex items-center gap-4">
                 <span className={`px-3 py-1 text-[10px] font-black uppercase border-2 border-black ${
-                  course.status === 'Completed' ? 'bg-brand-lime' : 'bg-gray-200'
+                  status === 'Completed' ? 'bg-brand-lime' : 'bg-gray-200'
                 }`}>
-                  {course.status}
+                  {status}
                 </span>
                 <span className="text-xs font-bold text-gray-500">{course.date}</span>
               </div>
@@ -162,7 +198,7 @@ export function CourseDetailView({ course, onBack }: Props) {
                         <Square size={24} className="stroke-2" />
                         )}
                         <span className={`font-bold text-sm uppercase ${step.isCompleted ? "line-through" : ""}`}>
-                        {step.label}
+                        {step.title}
                         </span>
                     </div>
                     <button 
@@ -215,7 +251,7 @@ export function CourseDetailView({ course, onBack }: Props) {
                    Open Credential URL <ExternalLink size={14}/>
                 </Button>
                 <button 
-                  onClick={handleDelete}
+                  onClick={() => setIsDeleteModalOpen(true)}
                   disabled={isDeleting}
                   className="w-full border-2 border-red-500 text-red-500 py-3 font-black text-[10px] uppercase hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
                 >
@@ -231,6 +267,13 @@ export function CourseDetailView({ course, onBack }: Props) {
         isOpen={isEditOpen} 
         onClose={() => setIsEditOpen(false)} 
         course={course} 
+      />
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        isLoading={isDeleting}
       />
     </>
   );

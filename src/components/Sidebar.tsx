@@ -5,35 +5,37 @@ import {
   Trophy, 
   Settings, 
   LogOut, 
-  UserCircle 
+  User as UserIcon
 } from "lucide-react";
+import { useUser } from "../context/UserContext"; // <--- USE CONTEXT
 
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path: string) => location.pathname === path;
+  
+  const { user } = useUser(); // <--- GET GLOBAL USER DATA
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
+    window.location.reload(); // Force clear state
   };
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r-2 border-black flex flex-col justify-between z-50">
       
-      {/* Logo Section */}
-      <div className="p-6 border-b-2 border-black">
+      <div className="p-6 border-b-2 border-black flex justify-center bg-white">
         <div className="flex items-center gap-2">
-           <div className="w-8 h-8 bg-[#bef264] border-2 border-black flex items-center justify-center font-black">
+           <div className="w-8 h-8 bg-[#bef264] border-2 border-black flex items-center justify-center font-black text-black">
              C
            </div>
            <span className="font-header text-2xl font-black tracking-tighter">CREDIBLY</span>
         </div>
       </div>
 
-      {/* Navigation Links */}
-      <nav className="flex-1 flex flex-col p-4 gap-2 overflow-y-auto">
+      <nav className="flex-1 flex flex-col p-4 gap-2 overflow-y-auto bg-[#fdfbf6]">
         <SidebarLink 
           to="/dashboard" 
           icon={<LayoutDashboard size={20} />} 
@@ -60,15 +62,23 @@ export default function Sidebar() {
         />
       </nav>
 
-      {/* User Profile & Logout */}
-      <div className="p-4 border-t-2 border-black bg-gray-50">
+      <div className="p-4 border-t-2 border-black bg-white">
         <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="w-10 h-10 bg-[#bef264] border-2 border-black rounded-full flex items-center justify-center">
-                <UserCircle size={24} />
+            <div className="w-10 h-10 bg-white border-2 border-black flex items-center justify-center shrink-0 overflow-hidden">
+                {user.avatar ? (
+                    <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                    <UserIcon size={24} className="text-black" />
+                )}
             </div>
-            <div className="flex flex-col">
-                <span className="text-xs font-black uppercase">Student</span>
-                <span className="text-[10px] text-gray-500 font-bold">Logged In</span>
+            
+            <div className="flex flex-col overflow-hidden">
+                <span className="text-xs font-black uppercase truncate max-w-[120px]" title={user.username}>
+                    {user.username}
+                </span>
+                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">
+                    {user.role}
+                </span>
             </div>
         </div>
 
@@ -83,7 +93,6 @@ export default function Sidebar() {
   );
 }
 
-// Helper Component
 function SidebarLink({ 
   to, 
   icon, 

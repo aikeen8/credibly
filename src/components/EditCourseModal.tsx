@@ -3,6 +3,7 @@ import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import { type Course } from "./CourseDetailView";
 import { useState, useEffect } from "react";
+import { useToast } from "../context/ToastContext";
 
 type Props = {
   isOpen: boolean;
@@ -11,22 +12,34 @@ type Props = {
 };
 
 export function EditCourseModal({ isOpen, onClose, course }: Props) {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
-    title: course.title,
-    issuer: course.issuer,
-    date: course.date || "",
-    status: course.status,
-    skills: course.skills.join(", "),
-    credentialUrl: course.credentialUrl || "",
+    title: "",
+    issuer: "",
+    date: "",
+    status: "Planned",
+    skills: "",
+    credentialUrl: "", 
   });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    // 1. CLEANUP DATE: Tanggalin lahat ng "Target:" at spaces
+    // Regex: /(Target:\s*)+/g -> Tatanggalin kahit "Target: Target: " pa yan
+    let cleanDate = (course.date || "").replace(/(Target:\s*)+/gi, "").trim();
+
+    // 2. VALIDATION: Check kung valid YYYY-MM-DD format. Kung hindi (ex. "djsk"), gawing blank.
+    // Ito ang fix sa warning sa console mo.
+    const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(cleanDate);
+    if (!isValidDate) {
+        cleanDate = ""; 
+    }
+
     setFormData({
         title: course.title,
         issuer: course.issuer,
-        date: course.date || "",
-        status: course.status,
+        date: cleanDate, 
+        status: course.status as string,
         skills: course.skills.join(", "),
         credentialUrl: course.credentialUrl || "",
     });
@@ -38,29 +51,40 @@ export function EditCourseModal({ isOpen, onClose, course }: Props) {
 
     try {
       const skillsArray = formData.skills.split(",").map((s) => s.trim());
+      const token = localStorage.getItem("token");
+
+      // Check if token exists
+      if (!token) {
+        toast("Session expired. Please log in again.", "error");
+        return;
+      }
 
       const response = await fetch(`/api/goals/${course.id}`, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "x-auth-token": token 
         },
         body: JSON.stringify({
           ...formData,
+          date: formData.date, // Send raw YYYY-MM-DD
           skills: skillsArray,
         }),
       });
 
       if (response.ok) {
-        alert("Changes Saved!");
+        toast("Changes Saved Successfully!", "success");
         onClose();
-        window.location.reload();
+        setTimeout(() => window.location.reload(), 1000);
+      } else if (response.status === 401) {
+         toast("Session expired. Please log out and log in.", "error");
       } else {
         const errorData = await response.json();
-        alert(`Failed to update: ${errorData.message}`);
+        toast(`Failed to update: ${errorData.message}`, "error");
       }
     } catch (error) {
       console.error("Error updating goal:", error);
-      alert("Something went wrong.");
+      toast("Something went wrong.", "error");
     } finally {
       setIsLoading(false);
     }
@@ -85,18 +109,18 @@ export function EditCourseModal({ isOpen, onClose, course }: Props) {
                 <div className="flex flex-col gap-1">
                     <label className="text-[10px] font-header uppercase">Target Date</label>
                     <input 
-                        type="text" 
+                        type="date" 
                         value={formData.date} 
                         onChange={(e) => setFormData({...formData, date: e.target.value})} 
-                        className="bg-white border-2 border-black px-3 py-2 text-sm outline-none focus:shadow-[3px_3px_0_#000] rounded-none" 
+                        className="bg-white border-2 border-black px-3 py-2 text-sm outline-none focus:shadow-[3px_3px_0_#000] rounded-none w-full" 
                     />
                 </div>
                 <div className="flex flex-col gap-1">
                      <label className="text-[10px] font-header uppercase">Status</label>
                      <select 
                         value={formData.status}
-                        onChange={(e) => setFormData({...formData, status: e.target.value as any})}
-                        className="bg-white border-2 border-black px-3 py-2 text-sm outline-none focus:shadow-[3px_3px_0_#000] appearance-none rounded-none cursor-pointer"
+                        onChange={(e) => setFormData({...formData, status: e.target.value})}
+                        className="bg-white border-2 border-black px-3 py-2 text-sm outline-none focus:shadow-[3px_3px_0_#000] appearance-none rounded-none cursor-pointer w-full"
                     >
                         <option value="Planned">Planned</option>
                         <option value="In Progress">In Progress</option>

@@ -2,12 +2,177 @@ import { Button } from "../components/ui/Button";
 import { Card, CardContent, CardHeader } from "../components/ui/Card";
 import { Input } from "../components/ui/Input";
 import { Upload, Save, Download, UploadCloud, Trash2, Bell, Shield, User, Database } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { useToast } from "../context/ToastContext";
+import { useUser } from "../context/UserContext"; // <--- IMPORT THIS
 
 export default function SettingsPage() {
+  const { toast } = useToast();
+  const { refreshUser } = useUser(); // <--- GET REFRESH FUNCTION
+  
+  const [userData, setUserData] = useState({
+    username: "",
+    email: "",
+    role: "",
+    avatar: "",
+    notifications: {
+        expiringCertificates: true,
+        goalDeadlines: true,
+        weeklyInsights: false
+    }
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+            const res = await fetch("http://localhost:5000/api/auth/profile", {
+                headers: { "x-auth-token": token }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setUserData({
+                    username: data.username,
+                    email: data.email,
+                    role: data.role || "Student",
+                    avatar: data.avatar || "",
+                    notifications: data.notifications || {
+                        expiringCertificates: true,
+                        goalDeadlines: true,
+                        weeklyInsights: false
+                    }
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+              setUserData(prev => ({ ...prev, avatar: reader.result as string }));
+          };
+          reader.readAsDataURL(file);
+      }
+  };
+
+  const handleToggle = (key: keyof typeof userData.notifications) => {
+      setUserData(prev => ({
+          ...prev,
+          notifications: {
+              ...prev.notifications,
+              [key]: !prev.notifications[key]
+          }
+      }));
+  };
+
+  const handleSave = async () => {
+      const token = localStorage.getItem("token");
+      try {
+          const res = await fetch("http://localhost:5000/api/auth/profile", {
+              method: "PUT",
+              headers: { 
+                  "Content-Type": "application/json",
+                  "x-auth-token": token || ""
+              },
+              body: JSON.stringify({
+                  avatar: userData.avatar,
+                  role: userData.role,
+                  notifications: userData.notifications
+              })
+          });
+          
+          if (res.ok) {
+              toast("Profile Settings Saved!", "success");
+              refreshUser(); // <--- TRIGGER GLOBAL UPDATE
+          }
+      } catch (err) {
+          console.error(err);
+          toast("Failed to save settings.", "error");
+      }
+  };
+
+  const handleExport = async () => {
+      const token = localStorage.getItem("token");
+      try {
+          const res = await fetch("http://localhost:5000/api/data/export", {
+              headers: { "x-auth-token": token || "" }
+          });
+          
+          if (res.ok) {
+              const blob = await res.blob();
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `credibly_backup_${new Date().toISOString().split('T')[0]}.json`;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              toast("Data Exported Successfully!", "success");
+          } else {
+              toast("Export failed.", "error");
+          }
+      } catch (error) {
+          console.error(error);
+          toast("Network error.", "error");
+      }
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+          try {
+              const json = JSON.parse(event.target?.result as string);
+              const token = localStorage.getItem("token");
+
+              if (!json.data || !Array.isArray(json.data)) {
+                  toast("Invalid backup file format.", "error");
+                  return;
+              }
+
+              const res = await fetch("http://localhost:5000/api/data/import", {
+                  method: "POST",
+                  headers: { 
+                      "Content-Type": "application/json",
+                      "x-auth-token": token || "" 
+                  },
+                  body: JSON.stringify({ data: json.data })
+              });
+
+              const msg = await res.json();
+              if (res.ok) {
+                  toast("Data Imported Successfully!", "success");
+                  setTimeout(() => window.location.reload(), 1500);
+              } else {
+                  toast("Import failed: " + msg.message, "error");
+              }
+
+          } catch (err) {
+              toast("Error parsing file.", "error");
+          }
+      };
+      reader.readAsText(file);
+  };
+
   return (
     <div className="flex flex-col gap-10 pb-10">
       
-      {/* HEADER */}
       <div className="flex flex-col gap-2 border-b-2 border-black pb-6">
         <h2 className="font-header text-3xl uppercase tracking-tight font-black">
           Settings
@@ -19,22 +184,34 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
-        {/* LEFT COLUMN (Profile & Security) */}
         <div className="lg:col-span-2 flex flex-col gap-8">
             
-            {/* 1. PROFILE SECTION */}
             <Card className="shadow-[8px_8px_0_0_#000]">
                 <CardHeader className="bg-brand-lime border-b-2 border-black flex items-center gap-2">
                     <User size={18} /> Profile Information
                 </CardHeader>
                 <CardContent className="flex flex-col gap-6 p-6">
-                    {/* Avatar Row */}
                     <div className="flex items-center gap-6">
-                        <div className="w-24 h-24 border-2 border-black bg-gray-100 flex items-center justify-center shrink-0">
-                            <User size={40} className="text-gray-400" />
+                        <div className="w-24 h-24 border-2 border-black bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden relative">
+                            {userData.avatar ? (
+                                <img src={userData.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                                <User size={40} className="text-gray-400" />
+                            )}
                         </div>
                         <div className="flex flex-col gap-2">
-                            <Button variant="secondary" className="flex items-center gap-2 text-xs">
+                            <input 
+                                type="file" 
+                                ref={fileInputRef} 
+                                className="hidden" 
+                                accept="image/*"
+                                onChange={handleFileChange}
+                            />
+                            <Button 
+                                variant="secondary" 
+                                className="flex items-center gap-2 text-xs"
+                                onClick={() => fileInputRef.current?.click()}
+                            >
                                 <Upload size={14} /> Upload Photo
                             </Button>
                             <span className="text-[10px] font-bold text-gray-500 uppercase">
@@ -43,24 +220,40 @@ export default function SettingsPage() {
                         </div>
                     </div>
 
-                    {/* Form Fields */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Full Name" placeholder="e.g. Jane Doe" />
-                        <Input label="Email Address" placeholder="name@example.com" type="email" />
+                        <Input 
+                            label="Username" 
+                            placeholder="username" 
+                            value={isLoading ? "Loading..." : userData.username}
+                            readOnly 
+                        />
+                        <Input 
+                            label="Email Address" 
+                            placeholder="name@example.com" 
+                            type="email" 
+                            value={isLoading ? "Loading..." : userData.email}
+                            readOnly 
+                        />
                     </div>
 
-                    {/* Role Input - Changed from Select to Input */}
-                    <Input label="Role / Title" placeholder="e.g. Product Designer" />
+                    <Input 
+                        label="Role / Title" 
+                        placeholder="e.g. Product Designer" 
+                        value={userData.role}
+                        onChange={(e) => setUserData({...userData, role: e.target.value})}
+                    />
 
                     <div className="pt-2">
-                        <Button className="w-full md:w-auto flex items-center justify-center gap-2">
+                        <Button 
+                            className="w-full md:w-auto flex items-center justify-center gap-2"
+                            onClick={handleSave}
+                        >
                             <Save size={16} /> Save Profile
                         </Button>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* 2. SECURITY SECTION */}
             <Card>
                 <CardHeader className="flex items-center gap-2 bg-black text-white">
                     <Shield size={18} /> Security & Auth
@@ -84,10 +277,8 @@ export default function SettingsPage() {
 
         </div>
 
-        {/* RIGHT COLUMN (Notifications & Data) */}
         <div className="flex flex-col gap-8">
 
-            {/* 3. NOTIFICATIONS SECTION */}
             <Card>
                 <CardHeader className="flex items-center gap-2">
                     <Bell size={18} /> Notifications
@@ -96,31 +287,49 @@ export default function SettingsPage() {
                     <ToggleItem 
                         label="Expiring Certificates" 
                         desc="Get notified 30 days before expiration." 
-                        defaultChecked={true}
+                        checked={userData.notifications.expiringCertificates}
+                        onChange={() => handleToggle("expiringCertificates")}
                     />
                     <ToggleItem 
                         label="Goal Deadlines" 
                         desc="Receive alerts for upcoming deadlines." 
-                        defaultChecked={true}
+                        checked={userData.notifications.goalDeadlines}
+                        onChange={() => handleToggle("goalDeadlines")}
                     />
                     <ToggleItem 
                         label="Weekly AI Insights" 
                         desc="Receive career path suggestions." 
-                        defaultChecked={false}
+                        checked={userData.notifications.weeklyInsights}
+                        onChange={() => handleToggle("weeklyInsights")}
                     />
                 </CardContent>
             </Card>
 
-            {/* 4. DATA ZONE */}
             <Card className="border-red-500">
                 <CardHeader className="flex items-center gap-2 text-red-500 border-red-500">
                     <Database size={18} /> Data Management
                 </CardHeader>
                 <CardContent className="p-6 flex flex-col gap-3">
-                    <Button variant="secondary" className="w-full flex items-center justify-between group">
+                    <Button 
+                        variant="secondary" 
+                        className="w-full flex items-center justify-between group"
+                        onClick={handleExport}
+                    >
                         <span className="flex items-center gap-2"><Download size={16}/> Export Data</span>
                     </Button>
-                    <Button variant="secondary" className="w-full flex items-center justify-between group">
+
+                    <input 
+                        type="file" 
+                        ref={importInputRef} 
+                        className="hidden" 
+                        accept=".json"
+                        onChange={handleImport}
+                    />
+                    <Button 
+                        variant="secondary" 
+                        className="w-full flex items-center justify-between group"
+                        onClick={() => importInputRef.current?.click()}
+                    >
                         <span className="flex items-center gap-2"><UploadCloud size={16}/> Import Data</span>
                     </Button>
                     
@@ -138,11 +347,16 @@ export default function SettingsPage() {
   );
 }
 
-function ToggleItem({ label, desc, defaultChecked }: { label: string, desc: string, defaultChecked: boolean }) {
+function ToggleItem({ label, desc, checked, onChange }: { label: string, desc: string, checked: boolean, onChange: () => void }) {
     return (
         <label className="flex items-start gap-3 cursor-pointer group">
             <div className="relative shrink-0">
-                <input type="checkbox" className="peer sr-only" defaultChecked={defaultChecked} />
+                <input 
+                    type="checkbox" 
+                    className="peer sr-only" 
+                    checked={checked} 
+                    onChange={onChange}
+                />
                 <div className="w-6 h-6 border-2 border-black bg-white peer-checked:bg-brand-lime transition-colors" />
                 <div className="absolute inset-0 flex items-center justify-center text-black opacity-0 peer-checked:opacity-100 pointer-events-none">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="square" strokeLinejoin="miter">

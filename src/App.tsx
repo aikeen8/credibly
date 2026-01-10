@@ -1,40 +1,43 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { ToastProvider } from "./context/ToastContext";
+import { UserProvider } from "./context/UserContext"; // <--- IMPORT THIS
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-// Import other pages if you have them (e.g. Pathways, Rewards)
+import Onboarding from "./pages/Onboarding";
+import VerifyEmail from "./pages/VerifyEmail";
+import Pathways from "./pages/Pathways";
+import Rewards from "./pages/Rewards";
+import Settings from "./pages/Settings";
 
-function AppContent() {
+function App() {
   const location = useLocation();
-  
-  // Listahan ng mga pages na WALANG Sidebar
-  const hideSidebarRoutes = ["/", "/signup"];
+  const hideSidebarRoutes = ["/", "/signup", "/onboarding", "/verify-email"];
   const showSidebar = !hideSidebarRoutes.includes(location.pathname);
 
   return (
-    <div className="flex min-h-screen bg-[#fdfbf6] font-sans text-black">
-      {/* Conditionally render Sidebar */}
-      {showSidebar && <Sidebar />}
-      
-      {/* Adjust margin if Sidebar is present */}
-      <main className={`flex-1 ${showSidebar ? "p-8 ml-64" : ""}`}>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          {/* Add other routes here */}
-        </Routes>
-      </main>
-    </div>
-  );
-}
-
-function App() {
-  return (
-    <Router>
-      <AppContent />
-    </Router>
+    <ToastProvider>
+      <UserProvider> {/* <--- WRAP INSIDE TOASTPROVIDER */}
+        <div className="flex min-h-screen bg-[#fdfbf6] font-sans text-black">
+          {showSidebar && <Sidebar />}
+          
+          <main className={`flex-1 ${showSidebar ? "p-8 ml-64" : ""}`}>
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/pathways" element={<Pathways />} />
+              <Route path="/rewards" element={<Rewards />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
+          </main>
+        </div>
+      </UserProvider>
+    </ToastProvider>
   );
 }
 

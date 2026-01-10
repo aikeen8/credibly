@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, BookOpen, GraduationCap, Lightbulb, Zap, Target, Map, Award } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const BADGE_DEFINITIONS = [
   { id: 1, title: "First Steps", desc: "Log your first planned credential in the system.", icon: <BookOpen size={32} /> },
@@ -22,13 +23,27 @@ type Goal = {
 export default function Rewards() {
   const [slideIndex, setSlideIndex] = useState(0);
   const [goals, setGoals] = useState<Goal[]>([]);
+  const navigate = useNavigate();
   
   useEffect(() => {
-    fetch("/api/goals")
-      .then((res) => res.json())
-      .then((data) => setGoals(data))
-      .catch((err) => console.error(err));
-  }, []);
+    const fetchRewardsData = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+            const res = await fetch("http://localhost:5000/api/goals", {
+                headers: { "x-auth-token": token }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setGoals(data);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    fetchRewardsData();
+  }, [navigate]);
 
   const totalGoals = goals.length;
   const completedGoals = goals.filter(g => g.status === "Completed").length;

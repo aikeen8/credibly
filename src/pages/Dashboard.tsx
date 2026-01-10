@@ -44,8 +44,25 @@ export default function Dashboard() {
   }, []);
 
   const fetchGoals = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        navigate("/");
+        return;
+    }
+
     try {
-      const response = await fetch("/api/goals");
+      const response = await fetch("http://localhost:5000/api/goals", {
+        headers: {
+            "x-auth-token": token
+        }
+      });
+
+      if (response.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/");
+          return;
+      }
+
       const data = await response.json();
       setGoals(data);
     } catch (error) {
@@ -60,18 +77,23 @@ export default function Dashboard() {
     setIsAnalyzing(true);
     
     try {
-        const res = await fetch('/api/ai/recommend', { method: 'POST' });
+        const token = localStorage.getItem("token");
+        const res = await fetch('http://localhost:5000/api/ai/recommend', { 
+            method: 'POST',
+            headers: {
+                "x-auth-token": token || ""
+            }
+        });
         const data = await res.json();
         
         if (data.title) {
             setRecommendation(data);
         } else {
-            console.error("AI Error:", data);
             alert("AI couldn't find a recommendation right now.");
         }
     } catch (error) {
         console.error(error);
-        alert("Server error. Check your terminal logs.");
+        alert("Server error.");
     } finally {
         setIsAnalyzing(false);
     }
@@ -176,7 +198,7 @@ export default function Dashboard() {
                 {isLoading ? (
                     <div className="text-xs font-bold uppercase text-gray-400">Loading activity...</div>
                 ) : recentActivity.length === 0 ? (
-                    <div className="text-xs font-bold uppercase text-gray-400">No activity yet.</div>
+                    <div className="text-xs font-bold uppercase text-gray-400">No activity yet. Log a goal to start!</div>
                 ) : (
                     recentActivity.map((goal) => (
                         <ActivityItem
@@ -217,31 +239,23 @@ export default function Dashboard() {
                     <>
                         <div className="flex justify-between items-start">
                              <Sparkles size={24} className="text-black fill-brand-lime" />
-                             <button 
-                                onClick={() => setRecommendation(null)} 
-                                className="text-[10px] font-black underline uppercase text-gray-500 hover:text-red-500"
-                             >
-                                Reset
-                             </button>
+                             <button onClick={() => setRecommendation(null)} className="text-[10px] font-black underline uppercase text-gray-500 hover:text-red-500">Reset</button>
                         </div>
                         
                         <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-black uppercase text-gray-500">
-                              Recommended for you:
-                            </span>
-                            <h4 className="font-header text-xl uppercase leading-tight font-black">
-                              {recommendation.title}
-                            </h4>
+                            <span className="text-[10px] font-black uppercase text-gray-500">Recommended for you:</span>
+                            <h4 className="font-header text-xl uppercase leading-tight font-black">{recommendation.title}</h4>
                         </div>
                         
                         <p className="text-xs text-gray-600 leading-snug">
                             {recommendation.reason}
                         </p>
 
-                        <Button onClick={() => window.open(recommendation.url, '_blank')}>
-                            <div className="flex items-center justify-center gap-2 w-full">
-                                VIEW COURSE <ExternalLink size={16} />
-                            </div>
+                        <Button 
+                            onClick={() => window.open(recommendation.url, '_blank')} 
+                            className="w-full flex items-center justify-center gap-2"
+                        >
+                            View Course <ExternalLink size={14} />
                         </Button>
                     </>
                 )}
@@ -278,7 +292,7 @@ function StatTile({
         {icon}
         <span className="text-[10px] uppercase font-black">{label}</span>
       </div>
-      <span className="text-3xl font-black">{value}</span>
+      <span className="text-3xl font-medium">{value}</span>
     </div>
   );
 }

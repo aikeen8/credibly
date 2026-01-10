@@ -3,33 +3,46 @@ import { Button } from "../components/ui/Button";
 import { Plus, MoreVertical, Calendar, Award } from "lucide-react";
 import { CourseDetailView, type Course } from "../components/CourseDetailView";
 import { AddGoalModal } from "../components/AddGoalModal";
+import { useNavigate } from "react-router-dom";
 
 export default function Pathways() {
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchGoals();
   }, []);
 
   const fetchGoals = async () => {
-    try {
-      const response = await fetch("/api/goals");
-      const data = await response.json();
-      
-      const formattedData = data.map((item: any) => ({
-        id: item._id,
-        title: item.title,
-        issuer: item.issuer,
-        status: item.status,
-        date: item.date ? `Target: ${item.date}` : "No Date", 
-        skills: item.skills || [],
-        credentialUrl: item.credentialUrl || "",
-        roadmap: item.roadmap || [],
-      }));
+    const token = localStorage.getItem("token");
+    if (!token) {
+        navigate("/");
+        return;
+    }
 
-      setCourses(formattedData);
+    try {
+      const response = await fetch("http://localhost:5000/api/goals", {
+        headers: {
+            "x-auth-token": token
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const formattedData = data.map((item: any) => ({
+            id: item._id,
+            title: item.title,
+            issuer: item.issuer || "Self-Paced",
+            status: item.status,
+            date: item.date ? `Target: ${item.date}` : "No Date", 
+            skills: item.skills || [],
+            credentialUrl: item.credentialUrl || "",
+            roadmap: item.roadmap || [],
+        }));
+        setCourses(formattedData);
+      }
     } catch (error) {
       console.error("Error fetching goals:", error);
     }
@@ -69,13 +82,19 @@ export default function Pathways() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courses.map((course) => (
-            <CourseTile 
-              key={course.id} 
-              course={course} 
-              onClick={() => setSelectedCourseId(course.id)} 
-            />
-          ))}
+          {courses.length === 0 ? (
+            <div className="col-span-full py-10 text-center text-gray-500 font-bold uppercase">
+                No active pathways found. Start by logging a goal!
+            </div>
+          ) : (
+            courses.map((course) => (
+                <CourseTile 
+                key={course.id} 
+                course={course} 
+                onClick={() => setSelectedCourseId(course.id)} 
+                />
+            ))
+          )}
         </div>
       </div>
 

@@ -1,25 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const Goal = require('../models/Goal');
+const auth = require('../middleware/authMiddleware');
 
-// GET all goals
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
-    const goals = await Goal.find().sort({ createdAt: -1 }); // Newest first
+    const goals = await Goal.find({ user: req.user.id });
     res.json(goals);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// POST a new goal
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   const goal = new Goal({
+    user: req.user.id,
     title: req.body.title,
-    issuer: req.body.issuer,
-    date: req.body.date,
+    issuer: req.body.issuer || "Self-Paced",
     status: req.body.status,
-    skills: req.body.skills, 
+    date: req.body.date,
+    skills: req.body.skills,
+    credentialUrl: req.body.credentialUrl,
+    roadmap: req.body.roadmap
   });
 
   try {
@@ -30,28 +32,47 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PATCH (Update) a goal status or details
-router.patch('/:id', async (req, res) => {
-  try {
-    const updatedGoal = await Goal.findByIdAndUpdate(
-      req.params.id, 
-      req.body, 
-      { new: true } 
-    );
-    res.json(updatedGoal);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+router.put('/:id', auth, async (req, res) => {
+    try {
+        let goal = await Goal.findById(req.params.id);
+        if (!goal) return res.status(404).json({ message: "Goal not found" });
+
+        if (goal.user.toString() !== req.user.id) {
+            return res.status(401).json({ message: "Not authorized" });
+        }
+
+        goal.title = req.body.title || goal.title;
+        goal.issuer = req.body.issuer || goal.issuer;
+        goal.status = req.body.status || goal.status;
+        goal.date = req.body.date || goal.date;
+        goal.skills = req.body.skills || goal.skills;
+        goal.credentialUrl = req.body.credentialUrl || goal.credentialUrl;
+        
+        if (req.body.roadmap) {
+            goal.roadmap = req.body.roadmap;
+        }
+
+        await goal.save();
+        res.json(goal);
+    } catch (err) {
+        res.status(500).json({ message: "Server Error" });
+    }
 });
 
-// DELETE a goal
-router.delete('/:id', async (req, res) => {
-  try {
-    await Goal.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Goal deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+router.delete('/:id', auth, async (req, res) => {
+    try {
+        const goal = await Goal.findById(req.params.id);
+        if (!goal) return res.status(404).json({ message: "Goal not found" });
+
+        if (goal.user.toString() !== req.user.id) {
+            return res.status(401).json({ message: "Not authorized" });
+        }
+
+        await goal.deleteOne();
+        res.json({ message: "Goal deleted" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
 module.exports = router;

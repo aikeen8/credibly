@@ -2,6 +2,7 @@ import { Modal } from "./ui/Modal";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import { useState } from "react";
+import { useToast } from "../context/ToastContext"; // <--- IMPORT
 
 type Props = {
   isOpen: boolean;
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export function AddGoalModal({ isOpen, onClose }: Props) {
+  const { toast } = useToast(); // <--- HOOK
   const [formData, setFormData] = useState({
     title: "",
     issuer: "",
@@ -25,11 +27,13 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
 
     try {
       const skillsArray = formData.skills.split(",").map((s) => s.trim());
+      const token = localStorage.getItem("token");
 
       const response = await fetch("/api/goals", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-auth-token": token || ""
         },
         body: JSON.stringify({
           ...formData,
@@ -38,19 +42,17 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
       });
 
       if (response.ok) {
-        alert("Goal Saved to Database!");
+        toast("New Goal Added Successfully!", "success"); // <--- TOAST
         setFormData({ title: "", issuer: "", date: "", status: "Planned", skills: "", credentialUrl: "" });
         onClose();
-        window.location.reload(); 
       } else {
         const errorData = await response.json(); 
-        console.error("Server Error Details:", errorData); 
-        alert(`Failed to save: ${errorData.message || "Unknown Error"}`);
+        toast(`Failed to save: ${errorData.message}`, "error"); // <--- TOAST
       }
 
     } catch (error) {
       console.error("Error saving goal:", error);
-      alert("Something went wrong (Network Error). Check console.");
+      toast("Something went wrong.", "error");
     } finally {
       setIsLoading(false);
     }
