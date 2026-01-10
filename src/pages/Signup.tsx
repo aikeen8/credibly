@@ -7,17 +7,13 @@ export default function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [sent, setSent] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // <--- NEW: Loading State
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Prevent double clicks
     if (isLoading) return;
-
-    setIsLoading(true); // <--- Start Loading
+    setIsLoading(true);
 
     try {
       const res = await fetch(`${API_URL}/api/auth/register`, {
@@ -29,28 +25,17 @@ export default function Signup() {
       const data = await res.json();
 
       if (res.ok) {
-        setSent(true);
+        alert("Account created successfully! Please log in.");
+        navigate("/");
       } else {
-        alert(data.message || "Failed to create account");
+        alert(data.message || "Signup failed");
       }
     } catch (error) {
-      alert("Something went wrong. Please check your connection.");
+      alert("Error connecting to server");
     } finally {
-      setIsLoading(false); // <--- Stop Loading (tapos na)
+      setIsLoading(false);
     }
   };
-
-  if (sent) {
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-[#bef264]">
-            <div className="bg-white border-2 border-black p-8 shadow-[8px_8px_0_0_#000] text-center max-w-md">
-                <h1 className="text-3xl font-black uppercase mb-4">Check Your Inbox</h1>
-                <p className="mb-6 font-medium">We sent a verification link to <strong>{email}</strong>.</p>
-                <Button onClick={() => navigate("/")} className="w-full justify-center">BACK TO LOGIN</Button>
-            </div>
-        </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#bef264] p-4">
@@ -74,14 +59,9 @@ export default function Signup() {
               value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           
-          {/* UPDATED BUTTON: May Loading Text at Disabled state */}
-          <Button 
-            className="w-full justify-center py-6 mt-2" 
-            disabled={isLoading}
-          >
-            {isLoading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
+          <Button className="w-full justify-center py-6 mt-2" disabled={isLoading}>
+            {isLoading ? "CREATING..." : "CREATE ACCOUNT"}
           </Button>
-
         </form>
 
         <p className="mt-6 text-center text-sm font-bold text-gray-500">
