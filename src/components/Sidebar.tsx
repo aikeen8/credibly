@@ -7,20 +7,20 @@ import {
   LogOut, 
   User as UserIcon
 } from "lucide-react";
-import { useUser } from "../context/UserContext"; // <--- USE CONTEXT
+import { useUser } from "../context/UserContext";
 
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path: string) => location.pathname === path;
   
-  const { user } = useUser(); // <--- GET GLOBAL USER DATA
+  const { user } = useUser();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
-    window.location.reload(); // Force clear state
+    window.location.reload(); 
   };
 
   return (

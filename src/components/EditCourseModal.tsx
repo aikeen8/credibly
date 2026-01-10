@@ -4,6 +4,7 @@ import { Button } from "./ui/Button";
 import { type Course } from "./CourseDetailView";
 import { useState, useEffect } from "react";
 import { useToast } from "../context/ToastContext";
+import { API_URL } from "../config";
 
 type Props = {
   isOpen: boolean;
@@ -24,12 +25,8 @@ export function EditCourseModal({ isOpen, onClose, course }: Props) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // 1. CLEANUP DATE: Tanggalin lahat ng "Target:" at spaces
-    // Regex: /(Target:\s*)+/g -> Tatanggalin kahit "Target: Target: " pa yan
     let cleanDate = (course.date || "").replace(/(Target:\s*)+/gi, "").trim();
 
-    // 2. VALIDATION: Check kung valid YYYY-MM-DD format. Kung hindi (ex. "djsk"), gawing blank.
-    // Ito ang fix sa warning sa console mo.
     const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(cleanDate);
     if (!isValidDate) {
         cleanDate = ""; 
@@ -53,13 +50,12 @@ export function EditCourseModal({ isOpen, onClose, course }: Props) {
       const skillsArray = formData.skills.split(",").map((s) => s.trim());
       const token = localStorage.getItem("token");
 
-      // Check if token exists
       if (!token) {
         toast("Session expired. Please log in again.", "error");
         return;
       }
 
-      const response = await fetch(`/api/goals/${course.id}`, {
+      const response = await fetch(`${API_URL}/api/goals/${course.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +63,7 @@ export function EditCourseModal({ isOpen, onClose, course }: Props) {
         },
         body: JSON.stringify({
           ...formData,
-          date: formData.date, // Send raw YYYY-MM-DD
+          date: formData.date, 
           skills: skillsArray,
         }),
       });

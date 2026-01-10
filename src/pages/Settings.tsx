@@ -4,11 +4,12 @@ import { Input } from "../components/ui/Input";
 import { Upload, Save, Download, UploadCloud, Trash2, Bell, Shield, User, Database } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "../context/ToastContext";
-import { useUser } from "../context/UserContext"; // <--- IMPORT THIS
+import { useUser } from "../context/UserContext"; 
+import { API_URL } from "../config";
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { refreshUser } = useUser(); // <--- GET REFRESH FUNCTION
+  const { refreshUser } = useUser();
   
   const [userData, setUserData] = useState({
     username: "",
@@ -32,7 +33,7 @@ export default function SettingsPage() {
         if (!token) return;
 
         try {
-            const res = await fetch("http://localhost:5000/api/auth/profile", {
+            const res = await fetch(`${API_URL}/api/auth/profile`, {
                 headers: { "x-auth-token": token }
             });
             if (res.ok) {
@@ -82,7 +83,7 @@ export default function SettingsPage() {
   const handleSave = async () => {
       const token = localStorage.getItem("token");
       try {
-          const res = await fetch("http://localhost:5000/api/auth/profile", {
+          const res = await fetch(`${API_URL}/api/auth/profile`, {
               method: "PUT",
               headers: { 
                   "Content-Type": "application/json",
@@ -97,7 +98,7 @@ export default function SettingsPage() {
           
           if (res.ok) {
               toast("Profile Settings Saved!", "success");
-              refreshUser(); // <--- TRIGGER GLOBAL UPDATE
+              refreshUser(); 
           }
       } catch (err) {
           console.error(err);
@@ -108,7 +109,7 @@ export default function SettingsPage() {
   const handleExport = async () => {
       const token = localStorage.getItem("token");
       try {
-          const res = await fetch("http://localhost:5000/api/data/export", {
+          const res = await fetch(`${API_URL}/api/data/export`, {
               headers: { "x-auth-token": token || "" }
           });
           
@@ -146,7 +147,7 @@ export default function SettingsPage() {
                   return;
               }
 
-              const res = await fetch("http://localhost:5000/api/data/import", {
+              const res = await fetch(`${API_URL}/api/data/import`, {
                   method: "POST",
                   headers: { 
                       "Content-Type": "application/json",

@@ -13,6 +13,7 @@ import {
   Plus,
   ExternalLink,
 } from "lucide-react";
+import { API_URL } from "../config";
 
 type Goal = {
   _id: string;
@@ -51,7 +52,7 @@ export default function Dashboard() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/goals", {
+      const response = await fetch(`${API_URL}/api/goals`, {
         headers: {
             "x-auth-token": token
         }
@@ -78,7 +79,7 @@ export default function Dashboard() {
     
     try {
         const token = localStorage.getItem("token");
-        const res = await fetch('http://localhost:5000/api/ai/recommend', { 
+        const res = await fetch(`${API_URL}/api/ai/recommend`, { 
             method: 'POST',
             headers: {
                 "x-auth-token": token || ""

@@ -4,6 +4,7 @@ import { Plus, MoreVertical, Calendar, Award } from "lucide-react";
 import { CourseDetailView, type Course } from "../components/CourseDetailView";
 import { AddGoalModal } from "../components/AddGoalModal";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 
 export default function Pathways() {
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
@@ -23,7 +24,7 @@ export default function Pathways() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/goals", {
+      const response = await fetch(`${API_URL}/api/goals`, {
         headers: {
             "x-auth-token": token
         }

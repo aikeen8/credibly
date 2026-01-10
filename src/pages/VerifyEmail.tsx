@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/Button";
+import { API_URL } from "../config";
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
@@ -14,7 +15,7 @@ export default function VerifyEmail() {
 
   const verify = async () => {
     try {
-        const res = await fetch("http://localhost:5000/api/auth/verify-email", {
+        const res = await fetch(`${API_URL}/api/auth/verify-email`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token }),

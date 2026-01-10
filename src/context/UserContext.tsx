@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { API_URL } from "../config";
 
 type User = {
   username: string;
@@ -25,7 +26,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (!token) return;
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/profile", {
+      const res = await fetch(`${API_URL}/api/auth/profile`, {
         headers: { "x-auth-token": token }
       });
       if (res.ok) {

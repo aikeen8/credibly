@@ -1,9 +1,10 @@
-import { ArrowLeft, ExternalLink, CheckSquare, Square, Trash2, Edit2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, CheckSquare, Square, Trash2 } from "lucide-react";
 import { Button } from "./ui/Button";
 import { useState, useEffect } from "react";
 import { EditCourseModal } from "./EditCourseModal";
 import { useToast } from "../context/ToastContext";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
+import { API_URL } from "../config";
 
 export type Course = {
   id: string;
@@ -52,7 +53,7 @@ export function CourseDetailView({ course, onBack }: Props) {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`/api/goals/${course.id}`, {
+      const response = await fetch(`${API_URL}/api/goals/${course.id}`, {
         method: "PUT",
         headers: { 
             "Content-Type": "application/json",
@@ -109,7 +110,7 @@ export function CourseDetailView({ course, onBack }: Props) {
     setIsDeleting(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`/api/goals/${course.id}`, {
+      const response = await fetch(`${API_URL}/api/goals/${course.id}`, {
         method: "DELETE",
         headers: {
             "x-auth-token": token || ""

@@ -2,7 +2,8 @@ import { Modal } from "./ui/Modal";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import { useState } from "react";
-import { useToast } from "../context/ToastContext"; // <--- IMPORT
+import { useToast } from "../context/ToastContext";
+import { API_URL } from "../config";
 
 type Props = {
   isOpen: boolean;
@@ -10,7 +11,7 @@ type Props = {
 };
 
 export function AddGoalModal({ isOpen, onClose }: Props) {
-  const { toast } = useToast(); // <--- HOOK
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: "",
     issuer: "",
@@ -29,25 +30,31 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
       const skillsArray = formData.skills.split(",").map((s) => s.trim());
       const token = localStorage.getItem("token");
 
-      const response = await fetch("/api/goals", {
+      if (!token) {
+        toast("Session expired. Please log in again.", "error");
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/api/goals`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-auth-token": token || ""
+          "x-auth-token": token
         },
         body: JSON.stringify({
           ...formData,
+          date: formData.date, 
           skills: skillsArray,
         }),
       });
 
       if (response.ok) {
-        toast("New Goal Added Successfully!", "success"); // <--- TOAST
+        toast("New Goal Added Successfully!", "success");
         setFormData({ title: "", issuer: "", date: "", status: "Planned", skills: "", credentialUrl: "" });
         onClose();
       } else {
         const errorData = await response.json(); 
-        toast(`Failed to save: ${errorData.message}`, "error"); // <--- TOAST
+        toast(`Failed to save: ${errorData.message}`, "error");
       }
 
     } catch (error) {
@@ -81,9 +88,8 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-header uppercase">Target Date</label>
               <input
-                type="text"
-                placeholder="e.g. Dec 2026"
-                className="bg-white border-2 border-black px-3 py-2 text-sm outline-none focus:shadow-[3px_3px_0_#000] rounded-none"
+                type="date"
+                className="bg-white border-2 border-black px-3 py-2 text-sm outline-none focus:shadow-[3px_3px_0_#000] rounded-none w-full"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               />
@@ -91,7 +97,7 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-header uppercase">Status</label>
               <select
-                className="bg-white border-2 border-black px-3 py-2 text-sm outline-none focus:shadow-[3px_3px_0_#000] appearance-none rounded-none cursor-pointer"
+                className="bg-white border-2 border-black px-3 py-2 text-sm outline-none focus:shadow-[3px_3px_0_#000] appearance-none rounded-none cursor-pointer w-full"
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               >
