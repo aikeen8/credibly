@@ -8,21 +8,35 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [sent, setSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // <--- NEW: Loading State
   const navigate = useNavigate();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch(`${API_URL}/api/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, email, password }),
-    });
+    
+    // Prevent double clicks
+    if (isLoading) return;
 
-    if (res.ok) {
-      setSent(true);
-    } else {
+    setIsLoading(true); // <--- Start Loading
+
+    try {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+
       const data = await res.json();
-      alert(data.message);
+
+      if (res.ok) {
+        setSent(true);
+      } else {
+        alert(data.message || "Failed to create account");
+      }
+    } catch (error) {
+      alert("Something went wrong. Please check your connection.");
+    } finally {
+      setIsLoading(false); // <--- Stop Loading (tapos na)
     }
   };
 
@@ -59,7 +73,15 @@ export default function Signup() {
             <input type="password" required className="w-full border-2 border-black p-3 font-bold focus:bg-[#fdfbf6]" 
               value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
-          <Button className="w-full justify-center py-6 mt-2">CREATE ACCOUNT</Button>
+          
+          {/* UPDATED BUTTON: May Loading Text at Disabled state */}
+          <Button 
+            className="w-full justify-center py-6 mt-2" 
+            disabled={isLoading}
+          >
+            {isLoading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
+          </Button>
+
         </form>
 
         <p className="mt-6 text-center text-sm font-bold text-gray-500">
