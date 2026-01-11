@@ -5,7 +5,8 @@ import {
   Trophy, 
   Settings, 
   LogOut, 
-  User as UserIcon
+  User as UserIcon,
+  Users // <--- Added Icon
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
 
@@ -47,6 +48,12 @@ export default function Sidebar() {
           icon={<Map size={20} />} 
           label="Pathways" 
           active={isActive("/pathways")} 
+        />
+        <SidebarLink 
+          to="/leaderboard" 
+          icon={<Users size={20} />} 
+          label="Community" 
+          active={isActive("/leaderboard")} 
         />
         <SidebarLink 
           to="/rewards" 

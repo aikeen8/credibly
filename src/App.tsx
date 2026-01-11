@@ -9,6 +9,8 @@ import Onboarding from "./pages/Onboarding";
 import Pathways from "./pages/Pathways";
 import Rewards from "./pages/Rewards";
 import Settings from "./pages/Settings";
+import Leaderboard from "./pages/Leaderboard";
+
 
 function App() {
   const location = useLocation();
@@ -31,6 +33,7 @@ function App() {
               <Route path="/pathways" element={<Pathways />} />
               <Route path="/rewards" element={<Rewards />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
             </Routes>
           </main>
         </div>

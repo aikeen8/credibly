@@ -14,6 +14,7 @@ const goalRoutes = require('./routes/goals');
 const aiRoutes = require('./routes/ai');
 const authRoutes = require('./routes/auth');
 const dataRoutes = require('./routes/data'); // <--- ADD THIS
+app.use('/api/leaderboard', require('./routes/leaderboard'));
 
 app.use('/api/goals', goalRoutes);
 app.use('/api/ai', aiRoutes);
