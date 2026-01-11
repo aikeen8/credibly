@@ -7,8 +7,8 @@ import {
   LogOut, 
   User as UserIcon,
   Users,
-  Menu, // Hamburger Icon
-  X     // Close Icon
+  Menu, 
+  X
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import { useState } from "react";
@@ -19,7 +19,6 @@ export default function Sidebar() {
   const isActive = (path: string) => location.pathname === path;
   const { user } = useUser();
   
-  // State para sa Mobile Menu toggle
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = () => {
@@ -31,22 +30,32 @@ export default function Sidebar() {
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
+  // --- NEW LOGO COMPONENT (Para consistent sa Mobile at Desktop) ---
+  const CrediblyLogo = () => (
+    <div className="flex items-center select-none group cursor-default">
+      {/* THE BOX "C" */}
+      <div className="w-10 h-10 bg-[#bef264] border-2 border-black flex items-center justify-center shadow-[3px_3px_0_0_#000] mr-1 group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-none transition-all">
+         <span className="font-black text-2xl text-black leading-none pt-0.5 pr-0.5">C</span>
+      </div>
+      
+      {/* THE REST "REDIBLY" */}
+      <span className="font-header text-3xl font-black tracking-tighter text-black leading-none mt-1">
+        REDIBLY
+      </span>
+    </div>
+  );
+
   return (
     <>
-      {/* MOBILE HEADER (Visible only on small screens) */}
+      {/* MOBILE HEADER */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b-2 border-black flex items-center justify-between px-4 z-50">
-        <div className="flex items-center gap-2">
-           <div className="w-8 h-8 bg-[#bef264] border-2 border-black flex items-center justify-center font-black text-black text-xs">
-             C
-           </div>
-           <span className="font-header text-xl font-black tracking-tighter">CREDIBLY</span>
-        </div>
+        <CrediblyLogo /> {/* Ginamit natin dito yung Logo */}
         <button onClick={toggleMenu} className="p-2 border-2 border-transparent active:bg-gray-100">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* OVERLAY (Para madim ang background pag open ang menu sa mobile) */}
+      {/* OVERLAY */}
       {isOpen && (
         <div 
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
@@ -54,25 +63,19 @@ export default function Sidebar() {
         />
       )}
 
-      {/* SIDEBAR (Responsive logic added) */}
+      {/* SIDEBAR */}
       <aside className={`
         fixed left-0 top-0 h-screen w-64 bg-white border-r-2 border-black flex flex-col justify-between z-50 transition-transform duration-300
         ${isOpen ? "translate-x-0" : "-translate-x-full"} 
         md:translate-x-0 md:top-0 
-        ${/* Adjustment for mobile header height if needed, but fixed top-0 covers it */ ""}
       `}>
         
-        {/* Logo Area (Hidden on mobile kasi nasa header na, shown on Desktop) */}
-        <div className="hidden md:flex p-6 border-b-2 border-black justify-center bg-white">
-            <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#bef264] border-2 border-black flex items-center justify-center font-black text-black">
-                C
-            </div>
-            <span className="font-header text-2xl font-black tracking-tighter">CREDIBLY</span>
-            </div>
+        {/* LOGO AREA (Desktop) */}
+        <div className="hidden md:flex p-6 border-b-2 border-black justify-center bg-white items-center h-24">
+            <CrediblyLogo /> {/* Ginamit natin ulit dito */}
         </div>
 
-        {/* Mobile Logo Area inside sidebar (Optional, spacing lang) */}
+        {/* Mobile Sidebar Label */}
         <div className="md:hidden h-16 border-b-2 border-black flex items-center px-6 bg-[#fdfbf6]">
             <span className="font-bold text-gray-500 uppercase text-xs">Menu</span>
         </div>
