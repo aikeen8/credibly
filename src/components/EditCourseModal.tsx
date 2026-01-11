@@ -71,7 +71,8 @@ export function EditCourseModal({ isOpen, onClose, course }: Props) {
       if (response.ok) {
         toast("Changes Saved Successfully!", "success");
         onClose();
-        setTimeout(() => window.location.reload(), 1000);
+        // REMOVED: setTimeout(() => window.location.reload(), 1000);
+        // Reason: Forces a hard refresh causing 404 on Vercel sub-routes.
       } else if (response.status === 401) {
          toast("Session expired. Please log out and log in.", "error");
       } else {
