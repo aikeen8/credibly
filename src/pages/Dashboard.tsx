@@ -101,7 +101,9 @@ export default function Dashboard() {
     }
   };
 
+  // FIX: Purely check isAutomated
   const manualGoals = goals.filter(g => !g.isAutomated);
+  
   const completedCount = goals.filter((g) => g.status === "Completed").length;
   const inProgressCount = goals.filter((g) => g.status === "In Progress").length;
   const plannedCount = goals.filter((g) => g.status === "Planned").length;

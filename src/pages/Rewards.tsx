@@ -16,6 +16,7 @@ const BADGE_DEFINITIONS = [
 
 type Goal = {
   _id: string;
+  title: string;
   status: string;
   skills: string[];
   roadmap: { isCompleted: boolean }[];
@@ -47,7 +48,9 @@ export default function Rewards() {
     fetchRewardsData();
   }, [navigate]);
 
+  // FIX: Purely check isAutomated. Old data needs to be deleted manually.
   const manualGoals = goals.filter(g => !g.isAutomated);
+  
   const completedGoals = goals.filter(g => g.status === "Completed").length;
   
   const uniqueSkills = new Set<string>();
