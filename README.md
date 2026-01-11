@@ -27,6 +27,8 @@ Credibly is an innovative web application designed to solve the lack of motivati
 3. [Installation](#installation)
     * [Prerequisites](#prerequisites)
 4. [Run](#run)
+5. [Contributors](#contributors)
+6. [License](#license)
 
 ### Features
 
