@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, BookOpen, GraduationCap, Lightbulb, Zap, Target, Map, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 
 const BADGE_DEFINITIONS = [
   { id: 1, title: "First Steps", desc: "Log your first planned credential in the system.", icon: <BookOpen size={32} /> },
@@ -31,7 +32,7 @@ export default function Rewards() {
         if (!token) return;
 
         try {
-            const res = await fetch("http://localhost:5000/api/goals", {
+            const res = await fetch(`${API_URL}/api/goals`, {
                 headers: { "x-auth-token": token }
             });
             if (res.ok) {
