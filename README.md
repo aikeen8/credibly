@@ -1,12 +1,14 @@
 <br />
 <div align="center">
   <a href="https://github.com/aikeen8/credibly">
-    <img src="src/assets/logo.png" alt="Logo" width="200">
+    <img src="assets/logo.png" alt="Logo" width="200">
   </a>
 
   <h1 align="center">Credibly</h1>
 
   <p align="center">
+    A dedicated achievement tracker designed to help self-learners organize scattered certifications, overcome analysis paralysis, and actually finish the courses they start.
+    <br />
     <br />
     <a href="https://credibly-snowy.vercel.app"><strong>View Live Demo »</strong></a>
     <br />
@@ -19,17 +21,16 @@
 
 ## About The Project
 
-Credibly was born out of a specific personal struggle: the tendency to "hoard" online courses and badges but failing to track or finish them.
+Credibly was built to assist self-learners who value continuous improvement but frequently encounter three specific challenges:
 
-Many self-learners love learning new skills but often face three problems:
-1.  **Memory Gap:** Completing courses across various platforms (like Udemy, Coursera, or YouTube) often leads to a disorganization. Without a centralized view, learners often lose track of their accumulated skills, leading to a sensation of stagnation despite constant effort.
-2.  **Lack of Focus:** With so many topics to learn, it is difficult to decide what to prioritize. Learners often start multiple courses at once but struggle to finish them, resulting in many "In Progress" but few "Completed" ones.
-3.  **Loss of Motivation:** Self-paced learning can be isolating. Unlike structured academic environments, there is often no immediate feedback loop or reward system, making it easy to lose momentum when the excitement of a new achievement fades.
+1.  **Scattered Achievements:** Completing courses on different platforms (like YouTube, Udemy, or Coursera) often leads to **disorganization**. Because there is no single place to view them all, it is easy to forget past accomplishments.
+2.  **Lack of Focus:** With so many topics to learn, it is difficult to decide what to prioritize. Learners often start multiple courses at once but struggle to finish them, resulting in many "In Progress" projects but few "Completed" ones.
+3.  **Loss of Motivation:** Self-paced learning lacks the immediate rewards found in schools or games. Without a clear feedback system, it is easy to lose interest when a course becomes difficult.
 
-**Credibly solves this by acting as:**
-* **A Unified Record:** A single place to log and visualize all your hard-earned credentials, regardless of where it was earned so you never lose track of your growth.
-* **A Commitment Tool:** By requiring you to log goals manually, it forces you to commit to a specific path.
-* **A Gamified System:** It uses badges and leaderboards to provide visual progress and keep users engaged.
+**Credibly addresses these issues by serving as:**
+* **A Unified Record:** A single dashboard to track every certificate and badge, regardless of where it was earned.
+* **A Commitment Tool:** By manually logging goals, the system encourages users to focus on one objective at a time.
+* **A Gamified System:** It uses badges, levels, and leaderboards to provide visual progress and keep users engaged.
 
 ## Table Of Contents
 
@@ -45,10 +46,10 @@ Many self-learners love learning new skills but often face three problems:
 
 * **Smart Goal Tracking:** Organize learning paths into Planned, In Progress, and Completed statuses with a visual Kanban-style workflow.
 * **AI-Powered Recommendations:** Integrated with **Google Gemini AI** to suggest relevant courses, skills, and roadmaps based on user goals.
-* **Gamification System:** dynamic badge system that awards users for consistency ("Consistency King") and milestones ("First Steps").
-* **Interactive Dashboard:** Provides real-time visual analytics of completion rates, and recent activities.
+* **Gamification System:** Dynamic badge system that awards users for consistency ("Consistency King") and milestones ("First Steps").
+* **Interactive Dashboard:** Provides real-time visual analytics of completion rates and recent activities.
 * **Community Leaderboard:** A ranking system to foster healthy competition among learners.
-* **Secure Authentication:** Custom JWT-based authentication system (username-based) with protected routes.
+* **Secure Authentication:** Custom JWT-based authentication system with protected routes.
 
 ### Technologies Used
 
@@ -67,15 +68,13 @@ Many self-learners love learning new skills but often face three problems:
 
 ## Application Snapshots
 
-| **Dashboard** | **Mobile View** |
+| **Dashboard** | **Pathways** |
 |:---:|:---:|
-| ![Dashboard Screenshot](LINK_TO_DASHBOARD_IMAGE_HERE) | ![Mobile Screenshot](LINK_TO_MOBILE_IMAGE_HERE) |
+|<img src="src/assets/dashboard.png" alt="Dashboard" width="400"> | <img src="src/assets/pathways.png" alt="Pathways" width="400"> |
 
 | **Rewards System** | **Community Leaderboard** |
 |:---:|:---:|
-| ![Rewards Screenshot](LINK_TO_REWARDS_IMAGE_HERE) | ![Leaderboard Screenshot](LINK_TO_LEADERBOARD_IMAGE_HERE) |
-
-*(Note: Replace the links above with your actual screenshot URLs)*
+| <img src="src/assets/rewards.png" alt="Rewards" width="400"> | <img src="src/assets/community.png" alt="Community" width="400"> |
 
 ## Installation
 
