@@ -19,6 +19,7 @@ type Goal = {
   status: string;
   skills: string[];
   roadmap: { isCompleted: boolean }[];
+  isAutomated?: boolean;
 };
 
 export default function Rewards() {
@@ -46,6 +47,7 @@ export default function Rewards() {
     fetchRewardsData();
   }, [navigate]);
 
+  const manualGoals = goals.filter(g => !g.isAutomated);
   const totalGoals = goals.length;
   const completedGoals = goals.filter(g => g.status === "Completed").length;
   
@@ -58,12 +60,12 @@ export default function Rewards() {
   const badges = BADGE_DEFINITIONS.map(badge => {
     let earned = false;
     switch(badge.id) {
-        case 1: earned = totalGoals >= 1; break;
+        case 1: earned = manualGoals.length >= 1; break;
         case 2: earned = completedGoals >= 3; break;
         case 3: earned = uniqueSkills.size >= 10; break;
         case 4: earned = totalStepsCompleted >= 5; break;
         case 5: earned = hasLongRoadmap; break;
-        case 6: earned = totalGoals >= 7; break;
+        case 6: earned = manualGoals.length >= 7; break;
         case 7: earned = completedGoals >= 1; break;
         case 8: earned = completedGoals >= 5; break;
         default: earned = false;

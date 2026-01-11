@@ -1,24 +1,21 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const GoalSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
+const goalSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   title: { type: String, required: true },
-  issuer: { type: String, default: "Self-Paced" },
   status: { type: String, default: "Planned" },
   date: { type: String },
-  skills: [String],
+  issuer: { type: String, default: "Self-Paced" },
+  skills: [{ type: String }],
   credentialUrl: { type: String },
   roadmap: [
-      {
-          title: String,
-          isCompleted: { type: Boolean, default: false }
-      }
+    {
+      title: { type: String },
+      isCompleted: { type: Boolean, default: false }
+    }
   ],
-  createdAt: { type: Date, default: Date.now }
+  isAutomated: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('Goal', GoalSchema);
+module.exports = mongoose.model("Goal", goalSchema);

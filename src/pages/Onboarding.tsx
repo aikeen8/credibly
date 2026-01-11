@@ -27,7 +27,6 @@ export default function Onboarding() {
 
     try {
         if (token) {
-            // 1. Create the Goal
             await fetch(`${API_URL}/api/goals`, {
                 method: "POST",
                 headers: { 
@@ -42,11 +41,11 @@ export default function Onboarding() {
                     roadmap: [
                         { title: "Research basics", isCompleted: false },
                         { title: "Build first project", isCompleted: false }
-                    ]
+                    ],
+                    isAutomated: true
                 }),
             });
 
-            // 2. Mark User as Onboarded
             await fetch(`${API_URL}/api/auth/complete-onboarding`, {
                 method: "PUT",
                 headers: { 
