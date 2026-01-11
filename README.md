@@ -1,42 +1,101 @@
-# Credibly: Personal Learning Platform
-> *Track your skills, earn badges, and get AI-powered learning recommendations.*
+# Credibly
+Gamified Personal Learning & Certification Tracker
 
-**Live Demo:** [https://credibly-snowy.vercel.app](https://credibly-snowy.vercel.app)
+![Credibly Dashboard](https://via.placeholder.com/1200x400?text=Insert+Dashboard+Screenshot+Here)
 
-## About
-Credibly is a full-stack web application designed to help self-learners track their progress. Unlike boring to-do lists, Credibly uses **gamification** (badges, leaderboards, levels) to keep users motivated. It also integrates **Google Gemini AI** to suggest personalized learning paths based on user interests.
+Live Demo: https://credibly-snowy.vercel.app
 
-## Key Features
-- ** Goal Tracking:** Organize learning paths into Planned, In Progress, and Completed statuses.
-- ** AI Recommendations:** Integrated Google Gemini to suggest courses and roadmaps.
-- ** Gamification:** Earn badges (e.g., "First Steps", "Consistency King") as you progress.
-- ** Interactive Dashboard:** Visual analytics of your completion rates and skills.
-- ** Mobile Responsive:** Fully optimized layout with a custom sidebar/hamburger menu.
-- ** Secure Auth:** JWT-based authentication (username-based, no email required).
+---
+
+## Overview
+Credibly is a full-stack web application designed to help self-learners and professionals track skills progress in a structured and motivating way.
+Instead of relying on traditional task lists, Credibly applies gamification and progress tracking to encourage consistent learning. The platform also integrates AI-powered recommendations to provide personalized insights and suggested learning paths based on user activity.
+
+---
+
+## Features
+
+### Learning & Progress Tracking
+- Create and manage learning pathways 
+- Track progress using Planned, In Progress, and Completed statuses
+- View recent learning activity in a centralized dashboard
+
+### Dashboard & Analytics
+- Completion index with visual progress indicators
+- Achievement and reward summaries
+
+### Gamification
+- Achievement badges for milestones and consistency
+- Trophy and rewards system to reinforce motivation
+
+### AI Recommendations
+- AI-generated learning suggestions 
+- Personalized insights based on user profile and activity
+
+### User Settings & Management
+- Profile management (photo, full name, role title)
+- Security settings (password update)
+- Notification preferences (expiring certifications, goal deadlines, AI insights)
+- Data management (export and import user data)
+
+### Authentication & Security
+- JWT-based authentication
+- Secure API routes
+- Username-based login (no email required)
+
+### Responsive Design
+- Fully responsive layout for desktop and mobile
+
+---
 
 ## Tech Stack
-**Frontend:**
+
+### Frontend
 - React (Vite)
 - TypeScript
 - Tailwind CSS
-- Lucide React (Icons)
+- Lucide React (icons)
 
-**Backend:**
-- Node.js & Express
+### Backend
+- Node.js
+- Express.js
 - MongoDB (Mongoose)
-- JWT (JSON Web Tokens)
+- JSON Web Tokens (JWT)
 - Google Gemini API
 
-## 📸 Screenshots
+### Deployment
+- Frontend: Vercel
+- Backend: Render
+- Database: MongoDB Atlas
+
+---
+
+## Screenshots
+
 | Dashboard | Mobile View |
-|-----------|-------------|
-| ![Dashboard](LINK_TO_DASHBOARD_IMAGE) | ![Mobile](LINK_TO_MOBILE_IMAGE) |
+|----------|-------------|
+| Dashboard Screenshot | Mobile Screenshot |
 
-| Rewards System | Leaderboard |
-|----------------|-------------|
-| ![Rewards](LINK_TO_REWARDS_IMAGE) | ![Leaderboard](LINK_TO_LEADERBOARD_IMAGE) |
+| Rewards | Leaderboard |
+|--------|-------------|
+| Rewards Screenshot | Leaderboard Screenshot |
 
-## 🚀 Getting Started
-1. **Clone the repo**
-   ```bash
-   git clone [https://github.com/aikeen8/credibly.git](https://github.com/aikeen8/credibly.git)
+Replace the placeholders with actual screenshots of the application.
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v18 or later recommended)
+- MongoDB (local instance or MongoDB Atlas)
+- Google Gemini API key
+
+---
+
+### Installation
+
+Clone the repository:
+```bash
+git clone https://github.com/aikeen8/credibly.git
+cd credibly
