@@ -48,7 +48,6 @@ export default function Rewards() {
   }, [navigate]);
 
   const manualGoals = goals.filter(g => !g.isAutomated);
-  const totalGoals = goals.length;
   const completedGoals = goals.filter(g => g.status === "Completed").length;
   
   const uniqueSkills = new Set<string>();
@@ -60,7 +59,7 @@ export default function Rewards() {
   const badges = BADGE_DEFINITIONS.map(badge => {
     let earned = false;
     switch(badge.id) {
-        case 1: earned = manualGoals.length >= 1; break;
+        case 1: earned = manualGoals.length >= 1; break; 
         case 2: earned = completedGoals >= 3; break;
         case 3: earned = uniqueSkills.size >= 10; break;
         case 4: earned = totalStepsCompleted >= 5; break;

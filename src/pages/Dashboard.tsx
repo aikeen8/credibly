@@ -22,6 +22,7 @@ type Goal = {
   date: string;
   skills?: string[];
   roadmap?: { isCompleted: boolean }[];
+  isAutomated?: boolean;
 };
 
 type Recommendation = {
@@ -100,6 +101,7 @@ export default function Dashboard() {
     }
   };
 
+  const manualGoals = goals.filter(g => !g.isAutomated);
   const completedCount = goals.filter((g) => g.status === "Completed").length;
   const inProgressCount = goals.filter((g) => g.status === "In Progress").length;
   const plannedCount = goals.filter((g) => g.status === "Planned").length;
@@ -112,12 +114,12 @@ export default function Dashboard() {
   const hasLongRoadmap = goals.some(g => (g.roadmap?.length || 0) >= 5);
 
   let badgesEarned = 0;
-  if (totalGoals >= 1) badgesEarned++;
+  if (manualGoals.length >= 1) badgesEarned++;
   if (completedCount >= 3) badgesEarned++;
   if (uniqueSkills.size >= 10) badgesEarned++;
   if (totalStepsCompleted >= 5) badgesEarned++;
   if (hasLongRoadmap) badgesEarned++;
-  if (totalGoals >= 7) badgesEarned++;
+  if (manualGoals.length >= 7) badgesEarned++;
   if (completedCount >= 1) badgesEarned++;
   if (completedCount >= 5) badgesEarned++;
 
