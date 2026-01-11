@@ -5,11 +5,12 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/authMiddleware');
 
-// REGISTER
+// --- REGISTER (No Email, Direct Save) ---
 router.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body;
     
+    // Check username only
     const existingUser = await User.findOne({ username });
     if (existingUser) return res.status(400).json({ message: "Username already taken" });
 
@@ -17,7 +18,8 @@ router.post('/register', async (req, res) => {
 
     const newUser = new User({ 
         username, 
-        password: hashedPassword
+        password: hashedPassword,
+        isOnboarded: false
     });
     
     await newUser.save();
@@ -25,15 +27,17 @@ router.post('/register', async (req, res) => {
     res.status(201).json({ message: "Account created successfully" });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-// LOGIN
+// --- LOGIN (Username Only) ---
 router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = req.body; // Changed identifier to username
 
+    // Find by username only
     const user = await User.findOne({ username });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
@@ -44,17 +48,19 @@ router.post('/login', async (req, res) => {
 
     res.json({ 
         token, 
-        username: user.username, 
-        role: user.role, 
+        username: user.username,
+        role: user.role,
         avatar: user.avatar,
         isOnboarded: user.isOnboarded 
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-// GET PROFILE
+// --- OTHER ROUTES (Profile, etc.) ---
+
 router.get('/profile', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -64,7 +70,6 @@ router.get('/profile', auth, async (req, res) => {
   }
 });
 
-// UPDATE PROFILE (Avatar, Role, etc.)
 router.put('/profile', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
@@ -72,7 +77,8 @@ router.put('/profile', auth, async (req, res) => {
 
         if (req.body.avatar !== undefined) user.avatar = req.body.avatar;
         if (req.body.role !== undefined) user.role = req.body.role;
-        // Add other fields if necessary
+        // Add notifications update if needed
+        if (req.body.notifications !== undefined) user.notifications = req.body.notifications;
         
         await user.save();
         res.json(user);
@@ -81,7 +87,6 @@ router.put('/profile', auth, async (req, res) => {
     }
 });
 
-// UPDATE PASSWORD (NEW FUNCTION)
 router.put('/update-password', auth, async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
@@ -89,11 +94,9 @@ router.put('/update-password', auth, async (req, res) => {
 
         if (!user) return res.status(404).json({ message: "User not found" });
 
-        // 1. Check if Current Password is Correct
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) return res.status(400).json({ message: "Incorrect current password" });
 
-        // 2. Hash the New Password
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(newPassword, salt);
 
@@ -101,12 +104,10 @@ router.put('/update-password', auth, async (req, res) => {
         res.json({ message: "Password updated successfully" });
 
     } catch (err) {
-        console.error(err);
         res.status(500).json({ message: "Server error" });
     }
 });
 
-// COMPLETE ONBOARDING
 router.put('/complete-onboarding', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
