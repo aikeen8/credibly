@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { Code, Shield, Palette, Database, Smartphone, Terminal } from "lucide-react";
+import { API_URL } from "../config";
 
 const INTERESTS = [
   { id: "web_dev", label: "Web Development", icon: <Code size={32} /> },
@@ -22,31 +23,35 @@ export default function Onboarding() {
     setIsLoading(true);
 
     const interestLabel = INTERESTS.find(i => i.id === selected)?.label;
+    const token = localStorage.getItem("token");
 
-    // Auto-create a goal based on interest so AI works immediately
     try {
-        await fetch("http://localhost:5000/api/goals", {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-                // Note: Need to pass token if backend is secured, assuming simple pass for now
-            },
-            body: JSON.stringify({
-                title: `Master ${interestLabel}`,
-                status: "Planned",
-                date: new Date().toISOString().split('T')[0],
-                skills: [interestLabel], 
-                roadmap: [
-                    { title: "Research basics", isCompleted: false },
-                    { title: "Build first project", isCompleted: false }
-                ]
-            }),
-        });
+        if (token) {
+            await fetch(`${API_URL}/api/goals`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "x-auth-token": token
+                },
+                body: JSON.stringify({
+                    title: `Master ${interestLabel}`,
+                    status: "Planned",
+                    date: new Date().toISOString().split('T')[0],
+                    skills: [interestLabel], 
+                    roadmap: [
+                        { title: "Research basics", isCompleted: false },
+                        { title: "Build first project", isCompleted: false }
+                    ]
+                }),
+            });
+        }
         
         navigate("/dashboard");
     } catch (error) {
         console.error("Setup error", error);
         navigate("/dashboard");
+    } finally {
+        setIsLoading(false);
     }
   };
 
