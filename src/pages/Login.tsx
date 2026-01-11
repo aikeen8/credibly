@@ -2,34 +2,42 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { API_URL } from "../config";
+import { useToast } from "../context/ToastContext"; // <--- Import Toast
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { toast } = useToast(); // <--- Enable Toast
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch(`${API_URL}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", data.username);
-      
-      if (data.isOnboarded) {
-        navigate("/dashboard");
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", data.username);
+        
+        toast("Login successful!", "success"); // <--- SUCCESS TOAST
+        
+        if (data.isOnboarded) {
+          navigate("/dashboard");
+        } else {
+          navigate("/onboarding");
+        }
+        
       } else {
-        navigate("/onboarding");
+        toast(data.message || "Login failed", "error"); // <--- ERROR TOAST
       }
-      
-    } else {
-      alert(data.message);
+    } catch (error) {
+      toast("Cannot connect to server", "error");
     }
   };
 

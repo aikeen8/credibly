@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/authMiddleware');
 
+// REGISTER
 router.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -16,8 +17,7 @@ router.post('/register', async (req, res) => {
 
     const newUser = new User({ 
         username, 
-        password: hashedPassword,
-        isOnboarded: false 
+        password: hashedPassword
     });
     
     await newUser.save();
@@ -29,6 +29,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// LOGIN
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -46,27 +47,14 @@ router.post('/login', async (req, res) => {
         username: user.username, 
         role: user.role, 
         avatar: user.avatar,
-        isOnboarded: user.isOnboarded // <--- SEND STATUS TO FRONTEND
+        isOnboarded: user.isOnboarded 
     });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 });
 
-router.put('/complete-onboarding', auth, async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id);
-        if (!user) return res.status(404).json({ message: "User not found" });
-
-        user.isOnboarded = true;
-        await user.save();
-        
-        res.json({ message: "Onboarding completed", isOnboarded: true });
-    } catch (err) {
-        res.status(500).json({ message: "Server error" });
-    }
-});
-
+// GET PROFILE
 router.get('/profile', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -76,6 +64,7 @@ router.get('/profile', auth, async (req, res) => {
   }
 });
 
+// UPDATE PROFILE (Avatar, Role, etc.)
 router.put('/profile', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
@@ -83,9 +72,50 @@ router.put('/profile', auth, async (req, res) => {
 
         if (req.body.avatar !== undefined) user.avatar = req.body.avatar;
         if (req.body.role !== undefined) user.role = req.body.role;
+        // Add other fields if necessary
         
         await user.save();
         res.json(user);
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// UPDATE PASSWORD (NEW FUNCTION)
+router.put('/update-password', auth, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        // 1. Check if Current Password is Correct
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) return res.status(400).json({ message: "Incorrect current password" });
+
+        // 2. Hash the New Password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+
+        await user.save();
+        res.json({ message: "Password updated successfully" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// COMPLETE ONBOARDING
+router.put('/complete-onboarding', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        user.isOnboarded = true;
+        await user.save();
+        
+        res.json({ message: "Onboarding completed", isOnboarded: true });
     } catch (err) {
         res.status(500).json({ message: "Server error" });
     }

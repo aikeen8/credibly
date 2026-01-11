@@ -13,7 +13,6 @@ export default function SettingsPage() {
   
   const [userData, setUserData] = useState({
     username: "",
-    email: "",
     role: "",
     avatar: "",
     notifications: {
@@ -22,6 +21,13 @@ export default function SettingsPage() {
         weeklyInsights: false
     }
   });
+
+  const [passwords, setPasswords] = useState({
+      current: "",
+      new: "",
+      confirm: ""
+  });
+
   const [isLoading, setIsLoading] = useState(true);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -40,8 +46,7 @@ export default function SettingsPage() {
                 const data = await res.json();
                 setUserData({
                     username: data.username,
-                    email: data.email,
-                    role: data.role || "Student",
+                    role: data.role || "Achiever", 
                     avatar: data.avatar || "",
                     notifications: data.notifications || {
                         expiringCertificates: true,
@@ -103,6 +108,45 @@ export default function SettingsPage() {
       } catch (err) {
           console.error(err);
           toast("Failed to save settings.", "error");
+      }
+  };
+
+  // NEW FUNCTION: UPDATE PASSWORD
+  const handleUpdatePassword = async () => {
+      if (!passwords.current || !passwords.new || !passwords.confirm) {
+          toast("Please fill in all password fields.", "error");
+          return;
+      }
+
+      if (passwords.new !== passwords.confirm) {
+          toast("New passwords do not match.", "error");
+          return;
+      }
+
+      const token = localStorage.getItem("token");
+      try {
+          const res = await fetch(`${API_URL}/api/auth/update-password`, {
+              method: "PUT",
+              headers: { 
+                  "Content-Type": "application/json",
+                  "x-auth-token": token || ""
+              },
+              body: JSON.stringify({
+                  currentPassword: passwords.current,
+                  newPassword: passwords.new
+              })
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+              toast("Password updated successfully!", "success");
+              setPasswords({ current: "", new: "", confirm: "" });
+          } else {
+              toast(data.message || "Failed to update password", "error");
+          }
+      } catch (error) {
+          toast("Server error", "error");
       }
   };
 
@@ -221,25 +265,18 @@ export default function SettingsPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1">
                         <Input 
                             label="Username" 
                             placeholder="username" 
                             value={isLoading ? "Loading..." : userData.username}
                             readOnly 
                         />
-                        <Input 
-                            label="Email Address" 
-                            placeholder="name@example.com" 
-                            type="email" 
-                            value={isLoading ? "Loading..." : userData.email}
-                            readOnly 
-                        />
                     </div>
 
                     <Input 
                         label="Role / Title" 
-                        placeholder="e.g. Product Designer" 
+                        placeholder="e.g. Achiever" 
                         value={userData.role}
                         onChange={(e) => setUserData({...userData, role: e.target.value})}
                     />
@@ -261,15 +298,35 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent className="flex flex-col gap-6 p-6">
                     <div className="space-y-4">
-                        <Input label="Current Password" type="password" placeholder="••••••••" />
+                        <Input 
+                            label="Current Password" 
+                            type="password" 
+                            placeholder="••••••••" 
+                            value={passwords.current}
+                            onChange={(e) => setPasswords({...passwords, current: e.target.value})}
+                        />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Input label="New Password" type="password" />
-                            <Input label="Confirm New Password" type="password" />
+                            <Input 
+                                label="New Password" 
+                                type="password" 
+                                value={passwords.new}
+                                onChange={(e) => setPasswords({...passwords, new: e.target.value})}
+                            />
+                            <Input 
+                                label="Confirm New Password" 
+                                type="password" 
+                                value={passwords.confirm}
+                                onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
+                            />
                         </div>
                     </div>
                     
                     <div className="pt-2">
-                        <Button variant="secondary" className="w-full md:w-auto flex items-center justify-center gap-2">
+                        <Button 
+                            variant="secondary" 
+                            className="w-full md:w-auto flex items-center justify-center gap-2"
+                            onClick={handleUpdatePassword}
+                        >
                             Update Password
                         </Button>
                     </div>

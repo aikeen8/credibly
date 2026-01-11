@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { API_URL } from "../config";
+import { useToast } from "../context/ToastContext"; // <--- Import Toast
 
 export default function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast(); // <--- Enable Toast
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,13 +26,15 @@ export default function Signup() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Account created! Please log in.");
+        // SUCCESS TOAST
+        toast("Account created! Please log in.", "success");
         navigate("/");
       } else {
-        alert(data.message || "Signup failed");
+        // ERROR TOAST
+        toast(data.message || "Signup failed", "error");
       }
     } catch (error) {
-      alert("Error connecting to server");
+      toast("Error connecting to server", "error");
     } finally {
       setIsLoading(false);
     }
