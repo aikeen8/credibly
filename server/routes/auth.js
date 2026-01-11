@@ -5,12 +5,10 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/authMiddleware');
 
-// --- REGISTER (No Email, Direct Save) ---
 router.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body;
     
-    // Check username only
     const existingUser = await User.findOne({ username });
     if (existingUser) return res.status(400).json({ message: "Username already taken" });
 
@@ -32,12 +30,10 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// --- LOGIN (Username Only) ---
 router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body; // Changed identifier to username
+    const { username, password } = req.body;
 
-    // Find by username only
     const user = await User.findOne({ username });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
@@ -59,8 +55,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// --- OTHER ROUTES (Profile, etc.) ---
-
 router.get('/profile', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -77,7 +71,6 @@ router.put('/profile', auth, async (req, res) => {
 
         if (req.body.avatar !== undefined) user.avatar = req.body.avatar;
         if (req.body.role !== undefined) user.role = req.body.role;
-        // Add notifications update if needed
         if (req.body.notifications !== undefined) user.notifications = req.body.notifications;
         
         await user.save();
