@@ -1,7 +1,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/aikeen8/credibly">
-    <img src="assets/logo.png" alt="Logo" width="200">
+    <img src="src/assets/logo.png" alt="Logo" width="200">
   </a>
 
   <h1 align="center">Credibly</h1>
