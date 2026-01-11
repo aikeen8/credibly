@@ -6,10 +6,12 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "../context/ToastContext";
 import { useUser } from "../context/UserContext"; 
 import { API_URL } from "../config";
+import { useNavigate } from "react-router-dom";
 
 export default function SettingsPage() {
   const { toast } = useToast();
   const { refreshUser } = useUser();
+  const navigate = useNavigate();
   
   const [userData, setUserData] = useState({
     username: "",
@@ -36,7 +38,13 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchProfile = async () => {
         const token = localStorage.getItem("token");
-        if (!token) return;
+        
+        // FIX: Redirect if no token instead of hanging
+        if (!token) {
+            setIsLoading(false);
+            navigate("/"); 
+            return;
+        }
 
         try {
             const res = await fetch(`${API_URL}/api/auth/profile`, {
@@ -46,7 +54,7 @@ export default function SettingsPage() {
                 const data = await res.json();
                 setUserData({
                     username: data.username,
-                    role: data.role || "Achiever", 
+                    role: data.role || "Achiever", // Default fallback just in case
                     avatar: data.avatar || "",
                     notifications: data.notifications || {
                         expiringCertificates: true,
@@ -54,15 +62,23 @@ export default function SettingsPage() {
                         weeklyInsights: false
                     }
                 });
+            } else {
+                // If token invalid, logout
+                if (res.status === 401) {
+                    localStorage.removeItem("token");
+                    navigate("/");
+                }
             }
         } catch (err) {
             console.error(err);
+            toast("Failed to load profile", "error");
         } finally {
+            // FIX: Always turn off loading
             setIsLoading(false);
         }
     };
     fetchProfile();
-  }, []);
+  }, [navigate, toast]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -111,7 +127,6 @@ export default function SettingsPage() {
       }
   };
 
-  // NEW FUNCTION: UPDATE PASSWORD
   const handleUpdatePassword = async () => {
       if (!passwords.current || !passwords.new || !passwords.confirm) {
           toast("Please fill in all password fields.", "error");
@@ -269,6 +284,7 @@ export default function SettingsPage() {
                         <Input 
                             label="Username" 
                             placeholder="username" 
+                            // FIX: Check isLoading properly
                             value={isLoading ? "Loading..." : userData.username}
                             readOnly 
                         />
