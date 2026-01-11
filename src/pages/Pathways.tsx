@@ -35,7 +35,8 @@ export default function Pathways() {
         const formattedData = data.map((item: any) => ({
             id: item._id,
             title: item.title,
-            issuer: item.issuer || "Self-Paced",
+            // FIX: Added fallbacks (item.provider) just in case backend uses a different field name
+            issuer: item.issuer || item.provider || "Self-Paced",
             status: item.status,
             date: item.date ? `Target: ${item.date}` : "No Date", 
             skills: item.skills || [],

@@ -27,7 +27,7 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
     setIsLoading(true);
 
     try {
-      const skillsArray = formData.skills.split(",").map((s) => s.trim());
+      const skillsArray = formData.skills.split(",").map((s) => s.trim()).filter(s => s !== "");
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -35,17 +35,23 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
         return;
       }
 
+      // Explicitly construct body to ensure issuer is sent
+      const payload = {
+          title: formData.title,
+          issuer: formData.issuer, 
+          date: formData.date,
+          status: formData.status,
+          skills: skillsArray,
+          credentialUrl: formData.credentialUrl
+      };
+
       const response = await fetch(`${API_URL}/api/goals`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-auth-token": token
         },
-        body: JSON.stringify({
-          ...formData,
-          date: formData.date, 
-          skills: skillsArray,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -70,6 +76,7 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="space-y-4">
           <Input
+            name="title"
             label="Course / Goal Title"
             placeholder="e.g. AWS Solutions Architect"
             value={formData.title}
@@ -77,6 +84,7 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
             required
           />
           <Input
+            name="issuer"
             label="Issuing Organization"
             placeholder="e.g. Amazon Web Services"
             value={formData.issuer}
@@ -89,6 +97,7 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
               <label className="text-[10px] font-header uppercase">Target Date</label>
               <input
                 type="date"
+                name="date"
                 className="bg-white border-2 border-black px-3 py-2 text-sm outline-none focus:shadow-[3px_3px_0_#000] rounded-none w-full"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
@@ -97,6 +106,7 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-header uppercase">Status</label>
               <select
+                name="status"
                 className="bg-white border-2 border-black px-3 py-2 text-sm outline-none focus:shadow-[3px_3px_0_#000] appearance-none rounded-none cursor-pointer w-full"
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -109,6 +119,7 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
           </div>
 
           <Input
+            name="credentialUrl"
             label="Credential / Course URL (Optional)"
             placeholder="e.g. https://coursera.org/verify/..."
             value={formData.credentialUrl}
@@ -120,6 +131,7 @@ export function AddGoalModal({ isOpen, onClose }: Props) {
               Skills (Comma Separated)
             </label>
             <textarea
+              name="skills"
               className="bg-white border-2 border-black p-3 text-sm outline-none focus:shadow-[3px_3px_0_#000] min-h-[80px] resize-none rounded-none"
               placeholder="e.g. Cloud Computing, Architecture, Security"
               value={formData.skills}

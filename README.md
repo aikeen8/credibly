@@ -1,9 +1,12 @@
 <br />
 <div align="center">
-  <h1 align="center">🏆 Credibly</h1>
+  <a href="https://github.com/aikeen8/credibly">
+    <img src="src/assets/logo.png" alt="Logo" width="200">
+  </a>
+
+  <h1 align="center">Credibly</h1>
 
   <p align="center">
-    A gamified personal learning platform that helps self-learners track their progress, earn badges, and receive AI-powered course recommendations.
     <br />
     <a href="https://credibly-snowy.vercel.app"><strong>View Live Demo »</strong></a>
     <br />
@@ -16,7 +19,17 @@
 
 ## About The Project
 
-Credibly is an innovative web application designed to solve the lack of motivation in self-paced learning. Unlike traditional to-do lists, this system uses **gamification mechanics** (such as badges, leaderboards, and leveling) to keep users engaged. It integrates **Artificial Intelligence** to analyze user interests and automatically generate personalized learning roadmaps, making the journey from novice to expert smoother and more rewarding.
+Credibly was born out of a specific personal struggle: the tendency to "hoard" online courses and badges but failing to track or finish them.
+
+Many self-learners love learning new skills but often face three problems:
+1.  **Memory Gap:** Completing courses across various platforms (like Udemy, Coursera, or YouTube) often leads to a disorganization. Without a centralized view, learners often lose track of their accumulated skills, leading to a sensation of stagnation despite constant effort.
+2.  **Lack of Focus:** With so many topics to learn, it is difficult to decide what to prioritize. Learners often start multiple courses at once but struggle to finish them, resulting in many "In Progress" but few "Completed" ones.
+3.  **Loss of Motivation:** Self-paced learning can be isolating. Unlike structured academic environments, there is often no immediate feedback loop or reward system, making it easy to lose momentum when the excitement of a new achievement fades.
+
+**Credibly solves this by acting as:**
+* **A Unified Record:** A single place to log and visualize all your hard-earned credentials, regardless of where it was earned so you never lose track of your growth.
+* **A Commitment Tool:** By requiring you to log goals manually, it forces you to commit to a specific path.
+* **A Gamified System:** It uses badges and leaderboards to provide visual progress and keep users engaged.
 
 ## Table Of Contents
 
@@ -27,28 +40,30 @@ Credibly is an innovative web application designed to solve the lack of motivati
 3. [Installation](#installation)
     * [Prerequisites](#prerequisites)
 4. [Run](#run)
-5. [Contributors](#contributors)
-6. [License](#license)
 
 ### Features
 
-* **🎯 Smart Goal Tracking:** Organize learning paths into Planned, In Progress, and Completed statuses with a visual Kanban-style workflow.
-* **🤖 AI-Powered Recommendations:** Integrated with **Google Gemini AI** to suggest relevant courses, skills, and roadmaps based on user goals.
-* **🏆 Gamification System:** dynamic badge system that awards users for consistency ("Consistency King") and milestones ("First Steps").
-* **📊 Interactive Dashboard:** Provides real-time visual analytics of completion rates, recent activities, and skill acquisition.
-* **📱 Fully Mobile Responsive:** Optimized interface with a custom hamburger menu and adaptive layouts for seamless use on any device.
-* **👥 Community Leaderboard:** A ranking system to foster healthy competition among learners.
-* **🔒 Secure Authentication:** Custom JWT-based authentication system (username-based) with protected routes.
+* **Smart Goal Tracking:** Organize learning paths into Planned, In Progress, and Completed statuses with a visual Kanban-style workflow.
+* **AI-Powered Recommendations:** Integrated with **Google Gemini AI** to suggest relevant courses, skills, and roadmaps based on user goals.
+* **Gamification System:** dynamic badge system that awards users for consistency ("Consistency King") and milestones ("First Steps").
+* **Interactive Dashboard:** Provides real-time visual analytics of completion rates, and recent activities.
+* **Community Leaderboard:** A ranking system to foster healthy competition among learners.
+* **Secure Authentication:** Custom JWT-based authentication system (username-based) with protected routes.
 
 ### Technologies Used
 
-* ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
-* ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
-* ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
-* ![NodeJS](https://img.shields.io/badge/node.js-%2343853D.svg?style=for-the-badge&logo=node.js&logoColor=white)
-* ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
-* ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
-* ![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75B2?style=for-the-badge&logo=google%20bard&logoColor=white)
+**Frontend**
+* React
+* TypeScript
+* Tailwind CSS
+
+**Backend**
+* Node.js
+* Express.js
+* MongoDB
+
+**AI & Services**
+* Google Gemini API
 
 ## Application Snapshots
 
