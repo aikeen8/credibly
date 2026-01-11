@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User as UserIcon, Medal, Crown, Star } from "lucide-react";
+import { User as UserIcon, Medal, Crown } from "lucide-react"; // Removed Star
 import { API_URL } from "../config";
 import { useUser } from "../context/UserContext";
 

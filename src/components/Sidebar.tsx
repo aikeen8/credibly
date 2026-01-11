@@ -6,7 +6,7 @@ import {
   Settings, 
   LogOut, 
   User as UserIcon,
-  Users // <--- Added Icon
+  Users // <--- Added Icon for Community
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
 
