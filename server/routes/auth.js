@@ -16,7 +16,8 @@ router.post('/register', async (req, res) => {
 
     const newUser = new User({ 
         username, 
-        password: hashedPassword
+        password: hashedPassword,
+        isOnboarded: false 
     });
     
     await newUser.save();
@@ -40,10 +41,30 @@ router.post('/login', async (req, res) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    res.json({ token, username: user.username, role: user.role, avatar: user.avatar });
+    res.json({ 
+        token, 
+        username: user.username, 
+        role: user.role, 
+        avatar: user.avatar,
+        isOnboarded: user.isOnboarded // <--- SEND STATUS TO FRONTEND
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
+});
+
+router.put('/complete-onboarding', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        user.isOnboarded = true;
+        await user.save();
+        
+        res.json({ message: "Onboarding completed", isOnboarded: true });
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
 });
 
 router.get('/profile', auth, async (req, res) => {

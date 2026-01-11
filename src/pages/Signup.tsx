@@ -15,32 +15,19 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      const registerRes = await fetch(`${API_URL}/api/auth/register`, {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
 
-      const registerData = await registerRes.json();
+      const data = await res.json();
 
-      if (registerRes.ok) {
-        const loginRes = await fetch(`${API_URL}/api/auth/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ identifier: username, password }),
-        });
-
-        if (loginRes.ok) {
-          const loginData = await loginRes.json();
-          localStorage.setItem("token", loginData.token);
-          localStorage.setItem("user", loginData.username);
-          navigate("/onboarding");
-        } else {
-          alert("Account created, but auto-login failed. Please log in manually.");
-          navigate("/");
-        }
+      if (res.ok) {
+        alert("Account created! Please log in.");
+        navigate("/");
       } else {
-        alert(registerData.message || "Signup failed");
+        alert(data.message || "Signup failed");
       }
     } catch (error) {
       alert("Error connecting to server");

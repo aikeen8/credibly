@@ -21,7 +21,13 @@ export default function Login() {
     if (res.ok) {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", data.username);
-      navigate("/dashboard");
+      
+      if (data.isOnboarded) {
+        navigate("/dashboard");
+      } else {
+        navigate("/onboarding");
+      }
+      
     } else {
       alert(data.message);
     }

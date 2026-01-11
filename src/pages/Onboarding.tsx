@@ -27,6 +27,7 @@ export default function Onboarding() {
 
     try {
         if (token) {
+            // 1. Create the Goal
             await fetch(`${API_URL}/api/goals`, {
                 method: "POST",
                 headers: { 
@@ -43,6 +44,15 @@ export default function Onboarding() {
                         { title: "Build first project", isCompleted: false }
                     ]
                 }),
+            });
+
+            // 2. Mark User as Onboarded
+            await fetch(`${API_URL}/api/auth/complete-onboarding`, {
+                method: "PUT",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "x-auth-token": token
+                }
             });
         }
         

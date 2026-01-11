@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  isOnboarded: { type: Boolean, default: false }, // <--- NEW FIELD
   createdAt: { type: Date, default: Date.now },
   role: { type: String, default: "Learner" },
   avatar: { type: String, default: "" }
