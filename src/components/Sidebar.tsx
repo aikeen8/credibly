@@ -30,12 +30,13 @@ export default function Sidebar() {
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  // --- NEW LOGO COMPONENT (Para consistent sa Mobile at Desktop) ---
+  // --- UPDATED LOGO COMPONENT ---
   const CrediblyLogo = () => (
     <div className="flex items-center select-none group cursor-default">
       {/* THE BOX "C" */}
       <div className="w-10 h-10 bg-[#bef264] border-2 border-black flex items-center justify-center shadow-[3px_3px_0_0_#000] mr-1 group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-none transition-all">
-         <span className="font-black text-2xl text-black leading-none pt-0.5 pr-0.5">C</span>
+         {/* Added 'font-header' here to match the font style */}
+         <span className="font-header font-black text-2xl text-black leading-none pt-1 pr-0.5">C</span>
       </div>
       
       {/* THE REST "REDIBLY" */}
@@ -49,7 +50,7 @@ export default function Sidebar() {
     <>
       {/* MOBILE HEADER */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b-2 border-black flex items-center justify-between px-4 z-50">
-        <CrediblyLogo /> {/* Ginamit natin dito yung Logo */}
+        <CrediblyLogo />
         <button onClick={toggleMenu} className="p-2 border-2 border-transparent active:bg-gray-100">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -72,7 +73,7 @@ export default function Sidebar() {
         
         {/* LOGO AREA (Desktop) */}
         <div className="hidden md:flex p-6 border-b-2 border-black justify-center bg-white items-center h-24">
-            <CrediblyLogo /> {/* Ginamit natin ulit dito */}
+            <CrediblyLogo />
         </div>
 
         {/* Mobile Sidebar Label */}
