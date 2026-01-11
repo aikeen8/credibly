@@ -23,7 +23,8 @@ function App() {
         <div className="flex min-h-screen bg-[#fdfbf6] font-sans text-black">
           {showSidebar && <Sidebar />}
           
-          <main className={`flex-1 ${showSidebar ? "p-8 ml-64" : ""}`}>
+          {/* UPDATED MARGIN LOGIC HERE: pt-20 added for mobile header spacing */}
+          <main className={`flex-1 ${showSidebar ? "p-4 pt-24 md:p-8 md:pt-8 md:ml-64" : ""}`}>
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
