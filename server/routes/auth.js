@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/authMiddleware');
 
+User.collection.dropIndex('email_1').catch(() => {});
+
 router.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -25,7 +27,6 @@ router.post('/register', async (req, res) => {
     res.status(201).json({ message: "Account created successfully" });
 
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -50,7 +51,6 @@ router.post('/login', async (req, res) => {
         isOnboarded: user.isOnboarded 
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });

@@ -2,13 +2,13 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { API_URL } from "../config";
-import { useToast } from "../context/ToastContext"; // <--- Import Toast
+import { useToast } from "../context/ToastContext";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { toast } = useToast(); // <--- Enable Toast
+  const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ export default function Login() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", data.username);
         
-        toast("Login successful!", "success"); // <--- SUCCESS TOAST
+        toast("Login successful!", "success");
         
         if (data.isOnboarded) {
           navigate("/dashboard");
@@ -34,7 +34,7 @@ export default function Login() {
         }
         
       } else {
-        toast(data.message || "Login failed", "error"); // <--- ERROR TOAST
+        toast(data.message || "Login failed", "error");
       }
     } catch (error) {
       toast("Cannot connect to server", "error");
