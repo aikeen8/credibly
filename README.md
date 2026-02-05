@@ -22,14 +22,14 @@
 Credibly was born out of a specific personal struggle: the tendency to "hoard" online courses and badges but failing to track or finish them.
 
 Many self-learners love learning new skills but often face three problems:
-1.  **Memory Gap:** Completing courses across various platforms (like Udemy, Coursera, or YouTube) often leads to a disorganization. Without a centralized view, learners often lose track of their accumulated skills, leading to a sensation of stagnation despite constant effort.
-2.  **Lack of Focus:** With so many topics to learn, it is difficult to decide what to prioritize. Learners often start multiple courses at once but struggle to finish them, resulting in many "In Progress" but few "Completed" ones.
-3.  **Loss of Motivation:** Self-paced learning can be isolating. Unlike structured academic environments, there is often no immediate feedback loop or reward system, making it easy to lose momentum when the excitement of a new achievement fades.
+1.  Completing courses across various platforms (like Udemy, Coursera, or YouTube) often leads to a disorganization. Without a centralized view, learners often lose track of their accumulated skills.
+2.  With so many topics to learn, it is difficult to decide what to prioritize. Learners often start multiple courses at once but struggle to finish them, resulting in many "In Progress" but few "Completed" ones.
+3.  Self-paced learning can be isolating. Unlike structured academic environments, there is often no immediate feedback loop or reward system, making it easy to lose momentum when the excitement of a new achievement fades.
 
 **Credibly solves this by acting as:**
-* **A Unified Record:** A single place to log and visualize all your hard-earned credentials, regardless of where it was earned so you never lose track of your growth.
-* **A Commitment Tool:** By requiring you to log goals manually, it forces you to commit to a specific path.
-* **A Gamified System:** It uses badges and leaderboards to provide visual progress and keep users engaged.
+* A single place to log and visualize all your hard-earned credentials, regardless of where it was earned so you never lose track of your growth.
+* By requiring you to log goals manually, it forces you to commit to a specific path.
+* It uses badges and leaderboards to provide visual progress and keep users engaged.
 
 ## Table Of Contents
 
@@ -43,12 +43,12 @@ Many self-learners love learning new skills but often face three problems:
 
 ### Features
 
-* **Smart Goal Tracking:** Organize learning paths into Planned, In Progress, and Completed statuses with a visual Kanban-style workflow.
-* **AI-Powered Recommendations:** Integrated with **Google Gemini AI** to suggest relevant courses, skills, and roadmaps based on user goals.
-* **Gamification System:** dynamic badge system that awards users for consistency ("Consistency King") and milestones ("First Steps").
-* **Interactive Dashboard:** Provides real-time visual analytics of completion rates, and recent activities.
-* **Community Leaderboard:** A ranking system to foster healthy competition among learners.
-* **Secure Authentication:** Custom JWT-based authentication system (username-based) with protected routes.
+* Smart Goal Tracking
+* AI-Powered Recommendations
+* Gamification System
+* Interactive Dashboard
+* Community Leaderboard 
+* Secure Authentication 
 
 ### Technologies Used
 
